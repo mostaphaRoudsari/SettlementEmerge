@@ -1,4 +1,4 @@
-# EmergeSettlement
+# SettlementEmerge
 Designing the renewable city and region using  e[m]ergy accounting
 
 A web interface to help decision making for future settlement based on available natural resources.
