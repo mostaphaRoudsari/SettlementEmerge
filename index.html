@@ -51,7 +51,7 @@
 			.attr("height", height + margin.top + margin.bottom)
 			.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");			
-
+		
 		// add grid cells
 		var grid = svg.selectAll("rect")
 			.data(cells)
@@ -80,7 +80,7 @@
 	                return "translate(" + [ d.gx,d.gy ] + ")"
 	            })
 	        });
-
+		
 		var cities = svg.selectAll("circle")
 			.data(settlements)
 			.enter().append("circle")
@@ -94,6 +94,14 @@
 				.style("fill", "black");
       			//.call(drag);
 
+      	svg.selectAll("text")
+			.data(settlements)
+			.enter().append("text")
+      		.attr("x", function(d){ return d.x * gridSize;})
+      		.attr("y", function(d){ return d.y * gridSize - 2.1*gridSize;})
+      		.style("fill", "black")
+      		.style("font-size", "12px")
+      		.text(function(d){return d.name;});
 
 		// add mouse over tooltip
 		cities.append("title").text(function(d){return d.name + "> population: " + d.population;})
