@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html>
+
+<style>
+	body {
+	   font-family: sans-serif;
+	   font-size: 12px;
+	}
+</style>
+
+<head>
+	<title>e[m]ergy settlement</title>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> <!-- D3 -->
+	<script src = "./js/pace.min.js"></script>	
+	<style src = "./css/pace.css"></style>
+</head>
+
+<body>
+	<p>Hover the mouse on circles to see name and population.<p>
+	<p>Loading data will take few seconds...<p>
+	<div id = "grid"></div>
+
+	<script type="text/javascript">
+
+		var margin = { top: 50, right: 20, bottom: 100, left: 30 },
+			width = (window.innerWidth - margin.left - margin.right)/2,
+			height = (window.innerWidth - margin.top - margin.bottom)/2,
+			colors = ["#137484", "#00A3DB", "#9BD956", "#E6385C", "#F5EA0B", "#3ECA66"],
+			landuse = ["Wetlands", "Water", "Natural", "Developed", "Agriculture", "Forest"];
+		
+		// create color scale
+		var colorscale = d3.scale.ordinal()
+			.range(colors)
+			.domain(landuse);
+
+		d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/settlements.json", function(settlements){
+
+		d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/bitmapdata.json", function(data){
+		
+		var numOfColumns = data.numOfCol;
+		var gridSize = width/numOfColumns;
+		var cells = data.cells;
+		var cellArea = data.cellArea;
+
+
+
+		// create base svg and add group for grid
+		var svg = d3.select("#grid").append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");			
+
+		// add grid cells
+		var grid = svg.selectAll("rect")
+			.data(cells)
+			.enter().append("rect")
+				.attr("x", function(d){
+					// set the global x value for this cell
+					d.gx = (d.x * gridSize) + margin.left - gridSize/2;
+					return d.x * gridSize;})
+				.attr("y", function(d){
+					// set the global y value for this cell
+					d.gx = (d.y * gridSize) + margin.top - gridSize/2;
+					return d.y * gridSize;})
+				.attr("width", gridSize)
+				.attr("height", gridSize)
+				.attr("class", "cells")
+				.attr("id", function(d){return d.id;})
+				.style("fill", function(d){return colorscale(d.landuse);})
+
+		
+      	// Define drag beavior
+	    var drag = d3.behavior.drag()
+	        .on("drag", function(d) {
+	            d.gx += d3.event.dx;
+	            d.gy += d3.event.dy;
+	            d3.select(this).attr("transform", function(d){
+	                return "translate(" + [ d.gx,d.gy ] + ")"
+	            })
+	        });
+
+		var cities = svg.selectAll("circle")
+			.data(settlements)
+			.enter().append("circle")
+				.attr("cx", function(d){
+					d.gx = (d.x * gridSize) + margin.left;
+					return d.x * gridSize;})
+				.attr("cy", function(d){
+					d.gy = (d.y * gridSize) + margin.top;
+					return d.y * gridSize;})
+				.attr("r", 2*gridSize)
+				.style("fill", "black");
+      			//.call(drag);
+
+
+		// add mouse over tooltip
+		cities.append("title").text(function(d){return d.name + "> population: " + d.population;})
+		
+		// append title for each cell for mouse hover
+		// I think it is useful once they are taken by any of the cities
+		// grid.append("title").text("some text")
+		function getDistance(x0, y0, x1, y1){
+			// this is not the correct distance but since I just use it for comparison
+			// I'm trying to save the extra step of sqrt
+			return Math.pow((x1-x0),2) + Math.pow((y1-y0),2);
+		}
+	})
+})
+	
+	</script>
+
+</body>
+	
+
+</html>
