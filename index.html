@@ -95,8 +95,10 @@
 		// update population of the city
 		updatePopulation = function updatePopulation() {
 	        var thisCity = d3.select("#" + cityname);
-	        thisCity.data()[0].population = $("#new_population").val();
+	        var newPoulation = $("#new_population").val().trim();
 	        $("#new_population").remove();
+	        if (isNaN(parseInt(newPoulation))) return; // avoid invalid inputs
+	        thisCity.data()[0].population = newPoulation;
 			// update titles
 			d3.selectAll(".cities").selectAll("title").text(function(d){return d.name + "> population: " + d.population;});
 	    }
@@ -121,10 +123,10 @@
                         .attr("class", "externalObject")
                         .attr("x", d.x)
                         .attr("y", d.y)
-                        .attr("width", width/6)
-                        .attr("height", 18)
+                        .attr("width", 160)
+                        .attr("height", 24)
                         .append("xhtml:div")
-                        .html("<input type='text' id=new_population placeholder='input new population' onchange=updatePopulation()></input>")
+                        .html("<input type='text' id=new_population placeholder='input new population' onKeyPress='{if (event.keyCode==13)updatePopulation()}'></input>")
                         //found this example here: http://stackoverflow.com/questions/23503936/javascript-d3-create-floating-textbox-on-click-and-update-graph-from-textbox-in
                 		d3.event.preventDefault(); //stop showing browser menu
                 });
