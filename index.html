@@ -56,52 +56,53 @@
 		var grid = svg.selectAll("rect")
 			.data(cells)
 			.enter().append("rect")
-				.attr("x", function(d){
-					// set the global x value for this cell
-					d.gx = (d.x * gridSize) + margin.left - gridSize/2;
-					return d.x * gridSize;})
-				.attr("y", function(d){
-					// set the global y value for this cell
-					d.gx = (d.y * gridSize) + margin.top - gridSize/2;
-					return d.y * gridSize;})
+				.attr("transform", function(d) {
+					d.x = d.x * gridSize;
+					d.y = d.y * gridSize;
+					return "translate("+ [d.x, d.y] + ")";}) // move cells to the right place
 				.attr("width", gridSize)
 				.attr("height", gridSize)
 				.attr("class", "cells")
 				.attr("id", function(d){return d.id;})
 				.style("fill", function(d){return colorscale(d.landuse);})
 
+		// Added tooltip to make sure x - y values make sense
+		// grid.append("title").text(function(d){return d.x + "|" + d.y;})
 		
       	// Define drag beavior
 	    var drag = d3.behavior.drag()
 	        .on("drag", function(d) {
-	            d.gx += d3.event.dx;
-	            d.gy += d3.event.dy;
+	            d.x += d3.event.dx;
+	            d.y += d3.event.dy;
+	            //this.x = d.x;
+	            //this.y = d.y;
 	            d3.select(this).attr("transform", function(d){
-	                return "translate(" + [ d.gx,d.gy ] + ")"
+	                return "translate(" + [d.x, d.y] + ")"
 	            })
 	        });
 		
+		// add one circle for each city
 		var cities = svg.selectAll("circle")
 			.data(settlements)
 			.enter().append("circle")
-				.attr("cx", function(d){
-					d.gx = (d.x * gridSize) + margin.left;
-					return d.x * gridSize;})
-				.attr("cy", function(d){
-					d.gy = (d.y * gridSize) + margin.top;
-					return d.y * gridSize;})
 				.attr("r", 2*gridSize)
-				.style("fill", "black");
-      			//.call(drag);
-
+				.attr("transform", function(d) {
+					d.x = d.x * gridSize;
+					d.y = d.y * gridSize;
+					return "translate("+ [d.x, d.y] + ")";}) // move circles to the right place
+				.style("fill", "black")
+      			.call(drag);
+      	/*
+      	// add name of cities
       	svg.selectAll("text")
 			.data(settlements)
 			.enter().append("text")
-      		.attr("x", function(d){ return d.x * gridSize;})
-      		.attr("y", function(d){ return d.y * gridSize - 2.1*gridSize;})
+      		.attr("x", function(d){ return d.x;})
+      		.attr("y", function(d){ return d.y - 2.1*gridSize;})
       		.style("fill", "black")
       		.style("font-size", "12px")
       		.text(function(d){return d.name;});
+		*/
 
 		// add mouse over tooltip
 		cities.append("title").text(function(d){return d.name + "> population: " + d.population;})
