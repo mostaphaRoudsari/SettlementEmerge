@@ -51,7 +51,9 @@
 		var numOfColumns = data.numOfCol;
 		var gridSize = width/numOfColumns;
 		var cells = data.cells;
-		var cellArea = data.cellArea;
+		// total area in acres is 1581470
+		var totalArea = 1581470;
+		var cellArea = 1581470 / Math.pow(numOfColumns, 2);
 
 		// take care of whitespace in city names
 		settlements.forEach(function(d){d.nospacename = d.name.replace(" ", "\\ ")});
