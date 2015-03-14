@@ -1,39 +1,148 @@
-<!DOCTYPE html>
+<html lang="en">
+	
+	<head>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <meta name="description" content="">
+	    <meta name="author: Mostapha Roudsari" content="">
 
-<html>
+		<title>e[m]ergy settlement</title>
+		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> <!-- D3 -->
+	    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
-<style>
-	body {
-	   font-family: sans-serif;
-	   font-size: 12px;
-	}
+		<script src = "./js/pace.min.js"></script>	
+		<style src = "./css/pace.css"></style>
 
-	input {
-	   font-family: sans-serif;
-	   font-size: 12px;
-	}
-</style>
+		<!-- Bootstrap Core CSS -->
+	    <link href="base_bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="base_bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
-<head>
-	<title>e[m]ergy settlement</title>
-	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> <!-- D3 -->
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<style>
+		body {
+		   font-family: sans-serif;
+		   font-size: 12px;
+		}
 
-	<script src = "./js/pace.min.js"></script>	
-	<style src = "./css/pace.css"></style>
-</head>
+		input {
+		   display: inline-block;
+		   font-family: sans-serif;
+		   font-size: 12px;
+		}
+
+		output {
+		    display: inline-block;
+		   	font-size: 11px;
+		   	font-weight: bold;
+		    color: red;
+		     }
+
+	</style>
+
+	</head>
 
 <body>
-	<p>Hover the mouse on circles to see name and population.<p>
-	<p>Drag circles to relocate the cities - Right click to change population!<p>
-	<p>Loading data will take few seconds...<p>
-	<div id = "grid"></div>
+
+	    <!-- Page Content -->
+	    <div class="row-fluid">
+	        
+	    	<!-- scatter plot charts -->
+	        <div id="grid" class="col-xs-8">
+	            <!-- <h2>Total Energy</h2> -->
+	            <h3>MAP</h3>
+	            <span style:"font-size:12px"> Hover the mouse on circles to see name and population.<br>
+				Drag circles to relocate the cities - Right click to change population!<br>
+				Loading data will take few seconds...</span>
+	        </div>
+	    
+	    	<!-- sliders and eventually graphs -->
+	        <div id="sliders" class="col-xs-4">
+                <!-- <h3>SLIDERS</h3> -->
+                <form oninput="amount.value=nPopulation.value">
+                	1.Population: <output name="amount" for="nPopulation">2000</output>
+                	<input type="range" id="nPopulation" min="0" max="200000" value="2000" step="1000">
+        		</form>
+                <form oninput="amount.value=nDensity.value">
+                	2. Density (0.1-2.0): <output name="amount" for="nDensity">1.0</output>
+                	<input type="range" min="0.1" max="2.0" id="nDensity" value="1.0" step="0.1">
+        		</form>
+                <hr>
+                <form oninput="amount.value=nEnergyDemand.value">
+                	3. Energy Demand: <output name="amount" for="nEnergyDemand">1.0</output>
+                	<input type="range" min="0.1" max="2.0" id="nEnergyDemand" value="1.0" step="0.1">
+        		</form>
+                <form oninput="amount.value=nEDPV.value">
+                	4. Energy Mix - PV: <output name="amount" for="nEDPV">0.0</output>
+                	<input type="range" min="0.1" max="1.0" id="nEDPV" value="0.0" step="0.1">
+        		</form>
+                <form oninput="amount.value=nEDBioMass.value">
+                	5. Energy Mix - BioMass: <output name="amount" for="nEDBioMass">0.1</output>
+                	<input type="range" min="0.1" max="1.0" id="nEDBioMass" value="0.1" step="0.1">
+        		</form>
+                <form oninput="amount.value=nEDWind.value">
+                	6. Energy Mix - Wind: <output name="amount" for="nEDWind">0.0</output>
+                	<input type="range" min="0.1" max="1.0" id="nEDWind" value="0.0" step="0.1">
+        		</form>
+                <form oninput="amount.value=nEDWave.value">
+                	7. Energy Mix - Wave: <output name="amount" for="nEDWave">0.0</output>
+                	<input type="range" min="0.1" max="1.0" id="nEDWave" value="0.0" step="0.1">
+        		</form>
+				<hr>
+                <form oninput="amount.value=nFoodDemand.value">
+					8. Food Demand: <output name="amount" for="nFoodDemand">1.0</output>
+					<input type="range" min="0.1" max="2.0" id="nFoodDemand" value="1.0" step="0.1">
+        		</form>
+                <form oninput="amount.value=nFDGrains.value">
+					9. Diet - Grains: <output name="amount" for="nFDGrains">0.46</output>
+					<input type="range" min="0.00" max="1.0" id="nFDGrains" value="0.46" step="0.01">
+        		</form>
+                <form oninput="amount.value=nFDVegetables.value">
+					10. Diet - Vegetables: <output name="amount" for="nFDVegetables">0.12</output>
+					<input type="range" min="0.00" max="1.00" id="nFDVegetables" value="0.12" step="0.01">
+        		</form>
+                <form oninput="amount.value=nFDFruit.value">
+					11. Diet - Fruit: <output name="amount" for="nFDFruit">0.09</output>
+					<input type="range" min="0.00" max="1.00" id="nFDFruit" value="0.09" step="0.01">
+        		</form>
+                <form oninput="amount.value=nFDDairy.value">
+					12. Diet - Dairy: <output name="amount" for="nFDDairy">0.05</output>
+					<input type="range" min="0.00" max="1.00" id="nFDDairy" value="0.05" step="0.01">
+        		</form>
+                <form oninput="amount.value=nFDMeat.value">
+					13. Diet - Meat: <output name="amount" for="nFDMeat">0.23</output>
+					<input type="range" min="0.00" max="1.00" id="nFDMeat" value="0.23" step="0.01">
+        		</form>
+                <form oninput="amount.value=nFDFish.value">
+					14. Diet - Fish: <output name="amount" for="nFDFish">0.05</output>
+					<input type="range" min="0.00" max="1.00" id="nFDFish" value="0.05" step="0.01">
+        		</form>
+				<hr>
+                <form oninput="amount.value=nMileDriven.value">
+					15. Average miles Driven: <output name="amount" for="nMileDriven">1.0</output>
+					<input type="range" min="0.1" max="2.0" id="nMileDriven" value="1.0" step="0.1">
+        		</form>
+                <form oninput="amount.value=nVehicleEff.value">
+					18. Vehicle Efficiency: <output name="amount" for="nVehicleEff">1.0</output>
+					<input type="range" min="0.1" max="2.0" id="nVehicleEff" value="1.0" step="0.1">
+        		</form>
+                <form oninput="amount.value=nGasolineMix.value">
+					19. Gasoline Mix - Bio Fuels (Agriculture): <output name="amount" for="nGasolineMix">0.1</output>
+					<input type="range" min="0.0" max="1.0" id="nGasolineMix" value="0.1" step="0.1">
+        		</form>
+
+            </div>
+	    
+	    </div>
+	    <!-- /.row -->
+	    <!-- /.container -->
 
 	<script type="text/javascript">
 
-		var margin = { top: 50, right: 20, bottom: 100, left: 30 },
-			width = window.innerWidth - margin.left - margin.right,
-			height = window.innerWidth - margin.top - margin.bottom,
+		var margin = { top: 0, right: 20, bottom: 100, left: 0 },
+			width = window.innerWidth - 160;
+			mapWidth = 10 * width /12 - margin.left - margin.right - 120,
+			height = window.innerHeight + 20,
+			mapHeight = height - margin.top - margin.bottom,
 			colors = ["#137484", "#00A3DB", "#9BD956", "#E6385C", "#F5EA0B", "#3ECA66"],
 			landuse = ["Wetlands", "Water", "Natural", "Developed", "Agriculture", "Forest"],
 			cityname = "", // a public value to be used to change population of cities on click
@@ -49,7 +158,7 @@
 		d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/bitmapdata.json", function(data){
 		
 		var numOfColumns = data.numOfCol;
-		var gridSize = width/numOfColumns;
+		var gridSize = mapWidth/numOfColumns;
 		var cells = data.cells;
 		// total area in acres is 1581470
 		var totalArea = 1581470;
@@ -60,8 +169,8 @@
 
 		// create base svg and add group for grid
 		var svg = d3.select("#grid").append("svg")
-			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom)
+			.attr("width", mapWidth)
+			.attr("height", mapHeight)
 			.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");			
 		
@@ -176,6 +285,27 @@
 
 	
 	</script>
+
+		<!--
+	    <!-- /.footer
+	    <div class="row-fluid">
+	        <footer>
+	            <div class="footer navbar-fixed-bottom col-xs-12">
+	            <hr>
+	                <p>
+	                    March 2015 |
+	                    <a href="https://github.com/mostaphaRoudsari/SettlementEmerge" target="_blank"> About</a>
+	                </p>
+	            </div>
+	        </footer>
+	    </div>
+	    -->
+
+	    <!-- jQuery Version 1.11.1 -->
+	    <script src="base_bootstrap/js/jquery.js"></script>
+
+	    <!-- Bootstrap Core JavaScript -->
+	    <script src="base_bootstrap/js/bootstrap.min.js"></script>
 
 </body>
 	
