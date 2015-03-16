@@ -46,7 +46,27 @@
 	    <!-- Page Content -->
 	    <div class="row-fluid">
 	      	<div id="table" class="col-xs-12">
+	      		<!-- Also check this: http://jsfiddle.net/ch6yn/-->
+	      		<!-- This one looks like the right solution > https://mindmup.github.io/editable-table/-->
 	            <h3>Population table will be here!</h3>
+	            <!--
+	            <table border="3">
+				<thead>
+				<tr>Sunset Bay</tr>
+				<tr>Heading 2</tr>
+				</thead>
+				<tbody>
+				<tr>
+				<td contenteditable='false'>200</td>
+				<td contenteditable='false'>400</td>
+				</tr>
+				<tr>
+				<td contenteditable='true'>500</td>
+				<td contenteditable='true'>600</td>
+				</tr>
+				</tbody>
+				</table>
+				-->
 	    	</div>
 	    	<!-- map -->
 	        <div id="grid" class="col-xs-8">
@@ -88,19 +108,19 @@
 		        	<div class="col-xs-6">
 		                <form oninput="amount.value=nEDBioMass.value">
 		                	5. Energy Mix - BioMass: <output name="amount" for="nEDBioMass">0.1</output>
-		                	<input type="range" min="0.1" max="1.0" id="nEDBioMass" value="0.1" step="0.1">
+		                	<input type="range" min="0.0" max="1.0" id="nEDBioMass" value="0.1" step="0.1">
 		        		</form>
 		        	</div>
 		        	<div class="col-xs-6">
 		                <form oninput="amount.value=nEDWind.value">
 		                	6. Energy Mix - Wind: <output name="amount" for="nEDWind">0.0</output>
-		                	<input type="range" min="0.1" max="1.0" id="nEDWind" value="0.0" step="0.1">
+		                	<input type="range" min="0.0" max="1.0" id="nEDWind" value="0.0" step="0.1">
 		        		</form>
 		        	</div>
 		        	<div class="col-xs-6">
 		        		<form oninput="amount.value=nEDFuel.value">
 		                	7. Energy Mix - Fossil Fuel: <output name="amount" for="nEDFuel">0.0</output>
-		                	<input type="range" min="0.1" max="1.0" id="nEDFuel" value="0.0" step="0.1">
+		                	<input type="range" min="0.0" max="1.0" id="nEDFuel" value="0.9" step="0.1">
 		        		</form> 
 		        	</div>
 				</div>
@@ -127,7 +147,7 @@
 		        	</div>
 		            <div class="col-xs-6">
 		                <form oninput="amount.value=nFDFruit.value">
-							11. Diet - Fruit: <output name="amount" for="nFDFruit">0.09</output>
+							11. Diet - Fruit: <output name="amount" for="nFDFruit">0.08</output>
 							<input type="range" min="0.00" max="1.00" id="nFDFruit" value="0.09" step="0.01">
 		        		</form>
 		        	</div>
