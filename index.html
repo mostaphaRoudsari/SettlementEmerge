@@ -46,28 +46,11 @@
 	    <!-- Page Content -->
 	    <div class="row-fluid">
 	      	<div id="table" class="col-xs-12">
-	      		<!-- Also check this: http://jsfiddle.net/ch6yn/-->
-	      		<!-- This one looks like the right solution > https://mindmup.github.io/editable-table/-->
-	            <h3>Population table will be here!</h3>
-	            <!--
-	            <table border="3">
-				<thead>
-				<tr>Sunset Bay</tr>
-				<tr>Heading 2</tr>
-				</thead>
-				<tbody>
-				<tr>
-				<td contenteditable='false'>200</td>
-				<td contenteditable='false'>400</td>
-				</tr>
-				<tr>
-				<td contenteditable='true'>500</td>
-				<td contenteditable='true'>600</td>
-				</tr>
-				</tbody>
-				</table>
-				-->
+	      		<!-- Base on http://christopheviau.com/d3_tutorial/ -->
+	      		<!-- contenteditable='true' -->
+	            <h4>Population</h4>
 	    	</div>
+
 	    	<!-- map -->
 	        <div id="grid" class="col-xs-8">
 	            <h3>MAP</h3>
@@ -201,7 +184,9 @@
 			colors = ["#137484", "#00A3DB", "#9BD956", "#E6385C", "#F5EA0B", "#3ECA66"],
 			landuse = ["Wetlands", "Water", "Natural", "Developed", "Agriculture", "Forest"],
 			cityname = "", // a public value to be used to change population of cities on click
-			isFirstRun = true;
+			isFirstRun = true,
+			totalPopulation = 0;
+
 		
 		// create color scale
 		var colorscale = d3.scale.ordinal()
@@ -212,6 +197,45 @@
 
 		d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/bitmapdata.json", function(data){
 		
+
+		// population table - Based on: http://christopheviau.com/d3_tutorial/
+		var tableData = [];
+		tableData[0] = ["Cities"];
+		tableData[1] = ["Population"];
+
+		settlements.forEach(function(d){
+			tableData[0].push(d.name);
+			tableData[1].push(d.population);
+			totalPopulation += +d.population;
+		});
+
+		tableData[0].push("Total");
+		tableData[1].push(totalPopulation)
+
+		var populationTable = d3.select("#table")
+			.append("table")
+		    .style("border-collapse", "collapse")
+		    .style("border", "2px black solid")
+
+		    .selectAll("tr")
+		    .data(tableData)
+		    .enter().append("tr")
+
+			.selectAll("td")
+		    .data(function(d){return d;})
+		    .enter().append("td")
+		    .style("border", "1px black solid")
+		    .style("padding", "1px")
+		    .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")})
+		    .on("mouseout", function(){d3.select(this).style("background-color", "white")})
+		    .text(function(d){return d;})
+		    .style("font-size", "11px")
+		    .style("color", function(d){return (!isNaN(parseInt(d)))? "red":""})
+		    .style("font-weight", function(d, i){return (!isNaN(parseInt(d)))? "bold":"normal"})
+		    .attr("contenteditable", function(d, i){return !isNaN(parseInt(d))});
+
+
+		// start creating the map
 		var numOfColumns = data.numOfCol;
 		var gridSize = mapWidth/numOfColumns;
 		var cells = data.cells;
