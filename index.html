@@ -45,33 +45,43 @@
 
 	    <!-- Page Content -->
 	    <div class="row-fluid">
-	      	<div id="table" class="col-xs-12">
-	      		<!-- Base on http://christopheviau.com/d3_tutorial/ -->
-	      		<!-- contenteditable='true' -->
-	            <h4>Population</h4>
+	      	<div id="tableWrapper" class="col-xs-2">
+	      		<div class="col-xs-12">
+	      			<h3>DENSITY</h3>
+	                <form oninput="amount.value=nDensity.value">
+	                	2. Density: <output name="amount" for="nDensity">1.0</output>
+	                	<input type="range" min="0.1" max="2.0" id="nDensity" value="1.0" step="0.1">
+	        		</form>
+	        	</div>
+	      		<hr>
+	      		<div class="row-fluid">
+                	<div id = "table" class="col-xs-12">
+	            		<h3>POPULATION</h3>
+	            	</div>
+	            </div>
+	            
+	            <div class="row-fluid">
+                	<div id = "totalPopulation" class="col-xs-12">
+	            	</div>
+	            </div>
 	    	</div>
 
 	    	<!-- map -->
-	        <div id="grid" class="col-xs-8">
+	        <div id="grid" class="col-xs-7">
+	            <!--
 	            <h3>MAP</h3>
 	            <span style:"font-size:12px"> Hover the mouse on circles to see name and population. 
 				Drag circles to relocate the cities - Right click to change population! Loading data will take few seconds...</span>
+				-->
 	        </div>
 	    
 	    	<!-- sliders and eventually graphs -->
-	        <div id="sliders" class="col-xs-4">
-                <h3>SLIDERS</h3>
+	        <div id="sliders" class="col-xs-3">
+                <h3>SCENARIO SETUP</h3>
                 <div class="row-fluid">
                 	<div class="col-xs-12">
                 		<button id="play" type="button">RUN THIS SCENARIO!</button>
 	                </div>
-		            <hr>
-	                <div class="col-xs-12">
-		                <form oninput="amount.value=nDensity.value">
-		                	2. Density (0.1-2.0): <output name="amount" for="nDensity">1.0</output>
-		                	<input type="range" min="0.1" max="2.0" id="nDensity" value="1.0" step="0.1">
-		        		</form>
-		        	</div>
 	        	</div>
                 
                 <div class="row-fluid">
@@ -188,6 +198,9 @@
 			totalPopulation = 0;
 
 		
+		// create population scale for circle radius
+		var popScale = d3.scale.linear();
+
 		// create color scale
 		var colorscale = d3.scale.ordinal()
 			.range(colors)
@@ -199,18 +212,11 @@
 		
 
 		// population table - Based on: http://christopheviau.com/d3_tutorial/
-		var tableData = [];
-		tableData[0] = ["Cities"];
-		tableData[1] = ["Population"];
-
 		settlements.forEach(function(d){
-			tableData[0].push(d.name);
-			tableData[1].push(d.population);
 			totalPopulation += +d.population;
 		});
 
-		tableData[0].push("Total");
-		tableData[1].push(totalPopulation)
+		popScale.domain(d3.extent(settlements, function(d){return d.population;}));
 
 		var populationTable = d3.select("#table")
 			.append("table")
@@ -218,22 +224,28 @@
 		    .style("border", "2px black solid")
 
 		    .selectAll("tr")
-		    .data(tableData)
+		    .data(settlements)
 		    .enter().append("tr")
 
 			.selectAll("td")
-		    .data(function(d){return d;})
+		    .data(function(d){return [d.name, d.population];})
 		    .enter().append("td")
 		    .style("border", "1px black solid")
-		    .style("padding", "1px")
+		    .style("padding", "5px")
 		    .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")})
 		    .on("mouseout", function(){d3.select(this).style("background-color", "white")})
 		    .text(function(d){return d;})
-		    .style("font-size", "11px")
+		    .style("font-size", "12px")
 		    .style("color", function(d){return (!isNaN(parseInt(d)))? "red":""})
 		    .style("font-weight", function(d, i){return (!isNaN(parseInt(d)))? "bold":"normal"})
 		    .attr("contenteditable", function(d, i){return !isNaN(parseInt(d))});
 
+		d3.select("#totalPopulation")
+			.text("Total: " + totalPopulation)
+			.style("padding-top", "10px")
+			.style("font-size", "20px")
+		    .style("color", "red")
+		    .style("font-weight", "bold");
 
 		// start creating the map
 		var numOfColumns = data.numOfCol;
@@ -243,6 +255,8 @@
 		var totalArea = 1581470;
 		var cellArea = 1581470 / Math.pow(numOfColumns, 2);
 
+		popScale.range([2*gridSize, gridSize]);
+		
 		// update height
 		mapHeight = Math.max(mapHeight, mapWidth);
 		
@@ -317,12 +331,14 @@
 			.enter().append("circle")
 				.attr("class", "cities")
 				.attr("id", function(d){return d.name;})
-				.attr("r", 2*gridSize)
+				.attr("r", function(d){return popScale(d.population);})
 				.attr("transform", function(d) {
 					d.x = d.x * gridSize;
 					d.y = d.y * gridSize;
 					return "translate("+ [d.x, d.y] + ")";}) // move circles to the right place
-				.style("fill", "black")
+				.style("fill", "white")
+				.style("stroke", "black")
+				.style("stroke-width", "2px")
       			.call(drag)
       			.on("contextmenu", function(d) {
                     $(".externalObject").remove();
