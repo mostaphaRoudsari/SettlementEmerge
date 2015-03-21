@@ -301,6 +301,7 @@
 		// Added tooltip to make sure x - y values make sense
 		// grid.append("title").text(function(d){return d.x + "|" + d.y;})
 		
+      	/*
       	// Define drag beavior
 	    var drag = d3.behavior.drag()
 	        .on("drag", function(d) {
@@ -312,7 +313,7 @@
 	                return "translate(" + [d.x, d.y] + ")"
 	            })
 	        });
-		
+		*/
 
 		// update population of the city
 		updatePopulation = function updatePopulation() {
@@ -339,7 +340,7 @@
 				.style("fill", "white")
 				.style("stroke", "black")
 				.style("stroke-width", "2px")
-      			.call(drag)
+      			//.call(drag)
       			.on("contextmenu", function(d) {
                     $(".externalObject").remove();
                     cityname = d.nospacename;
