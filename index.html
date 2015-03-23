@@ -341,7 +341,7 @@
 					d.x = d.x * gridSize;
 					d.y = d.y * gridSize;
 					return "translate("+ [d.x, d.y] + ")";}) // move cells to the right place
-				.attr("width", 0)
+				.attr("width", gridSize)
 				.attr("height", gridSize)
 				.attr("class", "cells")
 				.attr("id", function(d){return "id_" + d.id;})
@@ -349,7 +349,8 @@
 
 		// animate loading the grid
 		grid.transition().duration(2000)
-			.attr("width", gridSize);
+			.attr("width", gridSize/4)
+			.attr("height", gridSize/2);
 
 		// Added tooltip to make sure x - y values make sense
 		// grid.append("title").text(function(d){return d.x + "|" + d.y;})
@@ -452,17 +453,20 @@
 			return true;
 		}
 
-
-		// run the scenario
-	    d3.select("#play")
-	        .on("click", function() {
-	        	if (!checkScenario()) return;
-	        	
-	        	grid.transition().duration(2000)
+		function resizeGird(callback) {
+			setTimeout(function(){
+				grid.transition()
+	        		.duration(1000)
 	        		.attr("width", gridSize/4)
 	        		.attr("height", gridSize/2);
+	        	
+	        	if(typeof callback == 'function')
+            		callback();
+    			}, 1000);
+		};
 
-	        	/*
+		// add a progress bar!
+		function findResources(){
 	        	// just for test running the first round
 	        	for (var rank = 0; rank < 1; rank++) {
 	        		
@@ -470,22 +474,37 @@
 	        			var resources = settlement.sortedResourcesIds;
 	        			var landuses = d3.keys(resources);
 	        			landuses.forEach(function(landuse){
-	        			var ids = resources[landuse][rank];
-	        			console.log(ids);
-	        			if(ids!=null){
-	        				ids.forEach(function(id){
-	        					d3.select("#id_" + id)
-	        						//.transition().duration(100)
-	        						.attr("width", gridSize/4)
-	        						.attr("height", gridSize/2);
-	        						//.attr("fill", "black");
-	        				});
-	        			}
-
+	        				var ids = resources[landuse][rank];
+	        				console.log(settlement.name, landuse);
+		        			if(ids!=null){
+		        				ids.forEach(function(id, i){
+		        					d3.select("#id_" + id)
+		        						.transition()
+										.delay(function(){
+											// manage delay in a way that it takes the same for all of cities?
+											return i * 10;})
+		        						.duration(200)
+		        						.attr("width", gridSize)
+		        						.attr("height", gridSize);
+		        						//.attr("fill", "black");
+		        				});
+	        				}
+		        		// debugger;
 	        			});
 	        		});
 	        	}
-	        	*/
+		}
+
+		// run the scenario
+	    d3.select("#play")
+	        .on("click", function() {
+	        	
+	        	if (!checkScenario())return;
+				
+				// I'm calling find resources inside resize grid to make sure
+				// http://stackoverflow.com/questions/1859185/how-to-force-sequential-javascript-execution
+				resizeGird(findResources);
+
 	        });
 	        	
     });
