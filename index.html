@@ -50,7 +50,14 @@
 		#progUpdate, #calcProgress{
 			color:#000;
 		}
-
+		
+		.hull {
+		  fill: orange;
+		  stroke: black;
+		  stroke-width: 2px;
+		  stroke-linejoin: round;
+		  opacity: .5;
+		}
 	</style>
 
 	</head>
@@ -396,6 +403,9 @@
 	        });
 		*/
 
+		var hull = svg.append("path")
+    		.attr("class", "hull");
+
 		// update population of the city
 		updatePopulation = function updatePopulation() {
 	        var thisCity = d3.select("#" + cityname);
@@ -440,6 +450,11 @@
                         .html("<input type='text' id=new_population placeholder='input new population' onkeydown ='{if (event.keyCode==13)updatePopulation()}; if (event.keyCode==27) {removeInputPanel();}'></input>")
                         //found this example here: http://stackoverflow.com/questions/23503936/javascript-d3-create-floating-textbox-on-click-and-update-graph-from-textbox-in
                 		d3.event.preventDefault(); //stop showing browser menu
+                })
+                .on("click", function(d){
+                	// console.log(d.takenPoints);
+                	// I think I will remove this from here to the end of each calculation so user can draw it all toghether if needed
+                	hull.datum(d3.geom.hull(d.takenPoints)).attr("d", function(d) { return "M" + d.join("L") + "Z"; });
                 });
       	/*
       	// add name of cities
@@ -498,9 +513,11 @@
 	        	var percentDone = 0;
 	        	progBar.value = percentDone;
 
+	        	// re-set taken points
+	        	settlements.forEach(function(settlement){settlement.takenPoints = [];});
+
 	        	// just for test running the first round
 	        	for (var rank = 0; rank < 1; rank++) {
-	        		
 	        		settlements.forEach(function(settlement){
 	        			var resources = settlement.sortedResourcesIds;
 	        			var landuses = d3.keys(resources);
@@ -512,10 +529,13 @@
 		        			if(ids!=null){
 	        					$('#progUpdate').empty().append(settlement.name + ": " + landuse);
 		        				ids.forEach(function(id, i){
-		        					
 		        					d3.select("#id_" + id)
 		        						.transition()
-										.delay(function(){
+										.delay(function(d){
+											// also push the point to taken points
+											// I will use this to draw boundary for each city
+											settlement.takenPoints.push([d.x + (gridSize/2), d.y + (gridSize/2)]);
+
 											// manage delay in a way that it takes the same for all of cities?
 											return (i + 2) * 20;})
 		        						.duration(50)
