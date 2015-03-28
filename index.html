@@ -294,9 +294,25 @@
 					</div>
 				</div>
 				<div class="row-fluid">
-						<div class="col-xs-12">
-						There are 4 missing sliders which will go here
-						</div>
+					<div class="col-xs-12" style="font-weight:bold; padding-bottom:2px; padding-top:5px">
+		        		Consumption
+					</div>
+					<div class="col-xs-3">
+						<input type="text" id="nGoodPurchased" name="nGoodPurchased" value="100">
+						Goods Purchased
+					</div>
+					<div class="col-xs-3">
+						<input type="text" id="nWasteProduced" name="nWasteProduced" value="100">
+						Waste Produced
+					</div>
+					<div class="col-xs-3">
+						<input type="text" id="nWasteRecycling" name="nWasteRecycling" value="100">
+						Waste Recycling
+					</div>
+					<div class="col-xs-3">
+						<input type="text" id="nWaterUsage" name="nWaterUsage" value="100">
+						Water Usage - per capita
+					</div>
 				</div>
 				<div class="row-fluid">
 					<div id = "buttons" class="col-xs-12">
@@ -428,6 +444,22 @@
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });	        
 	        $("#nBldgDepr").ionRangeSlider({
+	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ","
+	        });
+	       	
+	       	$("#nGoodPurchased").ionRangeSlider({
+	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ","
+	        });
+	        
+	        $("#nWasteProduced").ionRangeSlider({
+	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ","
+	        });	        
+	       	
+	       	$("#nWasteRecycling").ionRangeSlider({
+	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ","
+	        });
+	       	
+	       	$("#nWaterUsage").ionRangeSlider({
 	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ","
 	        });
 
