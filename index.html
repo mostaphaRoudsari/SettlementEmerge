@@ -641,15 +641,15 @@
 		
 		d3.select("#showCities").on("click", function(){
 
-			if (showCities == true){
+			if (showCityNames == true){
 				// hide them!
 				d3.selectAll(".populationText").attr('visibility', 'hidden');
-				showCities = false;
+				showCityNames = false;
 			}
 			else
 			{
 				d3.selectAll(".populationText").attr('visibility', 'visible');
-				showCities = true;
+				showCityNames = true;
 			}
 
 		});
