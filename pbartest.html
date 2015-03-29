@@ -1,0 +1,28 @@
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<div class="col-xs-12">
+	<progress style="width:50%" value="0" max="100" id="progBar">
+    	<span id="calcProgress">
+        	<!-- Fallback goes here -->
+    	</span>
+	</progress>
+</div>
+<div id="progUpdate" class="col-xs-12">
+    	<!-- Success Message -->
+</div>
+
+<script type="text/javascript">
+	var counter = 0;
+	function myFunction() {
+		$('#progUpdate').empty().append(counter++);
+	    $('#progBar').val(counter++);
+	    
+
+	    if (counter <= 100) {
+	        setTimeout(myFunction, 0);
+	    }
+	};
+
+	myFunction();
+</script>
