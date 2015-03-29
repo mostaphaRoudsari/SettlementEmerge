@@ -295,10 +295,10 @@
 							<div class="col-xs-12" style="font-weight:bold; font-size:1.2em">
 		                		1.Select the Population Scenario
 		                		<select style="width:100%" name="populationScenarios">
-									  <option value="SC1" title="Each settlement point 'as is' with all population increases proportionate to that settlements ranking in the county.">Baseline Distribution</option>
-									  <option value="SC2" title="All settlements have an equal share of the total population.">Even Distribution</option>
-									  <option value="SC3" title="Takes the population and shares it evenly across two settlement points. (i.e. Jamestown and Dunkirk)">Two Centres</option>
-									  <option value="SC4" title="All population in a single point (i.e. Jamestown)">One Centre</option>
+									  <option value="0" title="Each settlement point 'as is' with all population increases proportionate to that settlements ranking in the county.">Baseline Distribution</option>
+									  <option value="1" title="All settlements have an equal share of the total population.">Even Distribution</option>
+									  <option value="2" title="Takes the population and shares it evenly across two settlement points. (i.e. Jamestown and Dunkirk)">Two Centres</option>
+									  <option value="3" title="All population in a single point (i.e. Jamestown)">One Centre</option>
 								</select>
 		            		</div>
 		            	</div>
@@ -693,6 +693,9 @@
 
 			svg.selectAll("circle.cities")
 				.attr("r", function(d){return popScale(d.population);})
+
+			// update titles
+			d3.selectAll(".cities").selectAll("title").text(function(d){return d.name + "> population: " + d.population;});
 		}
 
 		// update population of the city
@@ -702,9 +705,6 @@
 	        $("#new_population").remove();
 	        if (isNaN(parseInt(newPoulation))) return; // avoid invalid inputs
 	        thisCity.data()[0].population = newPoulation;
-			
-			// update titles
-			d3.selectAll(".cities").selectAll("title").text(function(d){return d.name + "> population: " + d.population;});
 
 			updatePopulation();
 	    }
@@ -963,6 +963,47 @@
 			    }
 				});
 		};
+
+		debugger;
+
+		var populationSc = [{Panama:4572, "Cherry Creek":5211, Ripley:2452, Brocton:5579,
+							Westfield:4896, Sherman:4813, Sinclairville: 4674, Fredonia: 11702, Cassadaga: 4527,
+							"Chautauqua Institution": 3618, Frewsburg: 5999, Busti: 4122, Kennedy: 4558, "Sunset Bay": 637,
+							Forestville: 4790, Dunkirk: 12836, "Silver Creek": 2035, Falconer: 2619, Celoron: 1686,
+							"Bemus Point": 4457, Mayville: 917, Lakewood: 3229, "Jamestown West": 1834, Jamestown: 31146},
+							{Panama:5538, "Cherry Creek":5538, Ripley:5538, Brocton:5538,
+							Westfield:5538, Sherman:5538, Sinclairville: 5538, Fredonia: 5538, Cassadaga: 5538,
+							"Chautauqua Institution": 5538, Frewsburg: 5538, Busti: 5538, Kennedy: 5538, "Sunset Bay": 5538,
+							Forestville: 5538, Dunkirk: 5538, "Silver Creek": 5538, Falconer: 5538, Celoron: 5538,
+							"Bemus Point": 5538, Mayville: 5538, Lakewood: 5538, "Jamestown West": 5538, Jamestown: 5538},
+							{Panama:0, "Cherry Creek":0, Ripley:0, Brocton:0,
+							Westfield:0, Sherman:0, Sinclairville: 0, Fredonia: 0, Cassadaga: 0,
+							"Chautauqua Institution": 0, Frewsburg: 0, Busti: 0, Kennedy: 0, "Sunset Bay": 0,
+							Forestville: 0, Dunkirk: 66454, "Silver Creek": 0, Falconer: 0, Celoron: 0,
+							"Bemus Point": 0, Mayville: 0, Lakewood: 0, "Jamestown West": 0, Jamestown: 66454},
+							{Panama:0, "Cherry Creek":0, Ripley:0, Brocton:0,
+							Westfield:0, Sherman:0, Sinclairville: 0, Fredonia: 0, Cassadaga: 0,
+							"Chautauqua Institution": 0, Frewsburg: 0, Busti: 0, Kennedy: 0, "Sunset Bay": 0,
+							Forestville: 0, Dunkirk: 0, "Silver Creek": 0, Falconer: 0, Celoron: 0,
+							"Bemus Point": 0, Mayville: 0, Lakewood: 0, "Jamestown West": 0, Jamestown: 132909}]
+
+		// SET UP DROP DOWN
+		$('select').on(
+		  	{ "focus": function() {
+		      	this.selectedIndex = -1;
+		    }
+		  	, "change": function() {
+		      	choice = $(this).val();
+		      	//console.log('changed!', this, choice);
+		      	this.blur();
+		      	// check which case is selected and change population based on the case
+		      	settlements.forEach(function(d){ d.population = populationSc[choice][d.name]; });
+
+		      	// update circles and text
+		      	updatePopulation();
+			}
+
+		  });
 
 		function getDistance(x0, y0, x1, y1){
 			// this is not the correct distance but since I just use it for comparison
