@@ -246,14 +246,14 @@
 						Vehicle miles Driven - Per Capita
 					</div>
 		            <div class="col-xs-8">
-		                	<input type="text" name="nMileDriven" id="nMileDriven" value="90">
+		                	<input type="text" name="nMileDriven" id="nMileDriven" value="100">
 		        	</div>
 					
 					<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
 						Vehicle Efficiency - MPG
 					</div>
 					<div class="col-xs-8">
-						<input type="text" name="nVehicleEff" id="nVehicleEff" value="200">
+						<input type="text" name="nVehicleEff" id="nVehicleEff" value="100">
         			</div>
 
 					<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
@@ -379,6 +379,7 @@
 			            		</h4>
 		            		</div>
 						</div>
+						<div id = "barChartReport" class="col-xs-12" style="font-weight:bold; margin-top:1em"></div>
 						<div id="grid" class="col-xs-12"></div>
 					</div>
 				</div>
@@ -542,10 +543,10 @@
 
 		// this is the base case as for 28 March 2015
 		var totalLandNeedPerPerson = [
-						{landuse: "Water", primary: 0.3690090869394135, support: 518995753179656.94, total: 518995753179657.3} ,
-						{landuse: "Forest", primary: 30.71073800739873, support: 744.981522117939, total: 775.6922601253377},
-						{landuse: "Agriculture", primary: 2.5618710143684065, support: 3603163780271802, total: 3603163780271804.5},
-						{landuse: "Developed", primary: 0.004148766637843936, support: 294882206163032260, total: 294882206163032260},
+						{landuse: "Water", primary: 0.3690090869394135, support: 0.11649527487027729, total: 0.48550436180969075} ,
+						{landuse: "Forest", primary: 28.79131688193631, support: 15.794500638903703, total: 44.58581752084001},
+						{landuse: "Agriculture", primary: 2.574507590935015, support: 283.08430517706574, total: 285.65881276800076},
+						{landuse: "Developed", primary: 0.3694624197743753, support: 631.4775279352248, total: 631.8469903549991},
 						{landuse: "Natural", primary: 0, support: 0, total: 0},
 						{landuse: "Wetlands", primary: 0, support: 0, total: 0}]
 
@@ -586,7 +587,7 @@
 		var cells = data.cells;
 		// total area in acres is 1581470
 		var totalArea = 960115; //1581470;
-		var cellArea = totalArea / Math.pow(numOfColumns, 2);
+		var cellArea = totalArea / cells.length;
 
 		popScale.range([Math.min(8, 2*gridSize), Math.min(4, gridSize)]);
 		
@@ -794,13 +795,17 @@
 
 		// draw bar charts
 		// landAreaAvailable vs (totalLandNeedPerPerson * totalPopulation)
-		var barChartMargin = {top:0, right:0, bottom:0, left:125};
+		var barChartMargin = {top:20, right:0, bottom:0, left:125};
 		var bWidth = d3.select("#barChart").style("width").replace("px","");
-		var bHeight = barChartHeight - barChartMargin.top - barChartMargin.bottom;
+		var bHeight = barChartHeight;
 
- 		var y = d3.scale.ordinal().rangeRoundBands([0, bHeight], .1);
+ 		var y = d3.scale.ordinal().rangeRoundBands([0, bHeight- barChartMargin.top - barChartMargin.bottom], .1);
   		var x = d3.scale.linear().rangeRound([0, bWidth- barChartMargin.left - barChartMargin.right]);
 
+		var xAxis = d3.svg.axis()
+		    .scale(x)
+		    .orient("top")
+		    .ticks(2);
 
 		var yAxis = d3.svg.axis()
 		    .scale(y)
@@ -822,12 +827,12 @@
       	});
 
       	var x0 = 0;
-      	landAreaAvailable.forEach(function(d){
-      		barChartData[1].total += +0.9 * d.total;
-      		barChartData[1].values.push({enabled: true, landuse: d.landuse, x0: x0, x1: x0 += +0.9 * d.total});
+      	totalLandNeedPerPerson.forEach(function(d){
+      		barChartData[1].total += +d.total * totalPopulation;
+      		barChartData[1].values.push({enabled: true, landuse: d.landuse, x0: x0, x1: x0 += +d.total * totalPopulation});
       	});
 
-    	x.domain([0, d3.max(barChartData, function(d) { return d.total;})]);
+    	x.domain([0, d3.max(barChartData, function(d) { return d.total;})]).nice();
 		y.domain(barChartData.map(function(d) { return d.name; }));
 
 	    barChart = barChartSvg.selectAll(".barChart")
@@ -837,7 +842,7 @@
 	        .attr("transform", function(d) { return "translate(0," + y(d.name) + ")"; });
 
 	    // draw rectangles
-	    bars = barChart.selectAll("rect")
+	    barChart.selectAll("rect")
 	        .data(function(d) { return d.values; })
 	      .enter().append("rect")
 	      	.attr("class", "bars")
@@ -846,32 +851,56 @@
 	        .attr("width", 0)
 	        .style("opacity", 0.8)
 	        .style("fill", function(d) {return colorscale(d.landuse); })
-	        
-		bars.transition().duration(2000)
+	       
+		barChart.selectAll("rect").transition().duration(2000)
 	        .attr("x", function(d) { return x(d.x0);})
 	        .attr("width", function(d) {return x(d.x1) - x(d.x0);});
 
-	    bars.append("title").text(function(d){return d.landuse + "> Area: " + (d.x1 - d.x0).toFixed(2);})
+	    barChart.selectAll("rect").append("title").text(function(d){return d.landuse + "> Area: " + (d.x1 - d.x0).toFixed(2);})
 
 	    barChartSvg.append("g")
 	        .attr("class", "y axis")
 	        .call(yAxis)
 
+		barChartSvg.append("g")
+	        .attr("class", "x axis")
+	        .call(xAxis)
+
+	    var diff = (barChartData[1].total/barChartData[0].total).toFixed(2);
+
 	    d3.select("#barChartComparison")
 	    	.style("height", bHeight)
 	    	.select("span")
-	    	.text((barChartData[1].total/barChartData[0].total).toFixed(2) + "X")
+	    	.text(diff + "X")
 	    	.style("font-size", "2em")
 		    .style("color", function(){
-		    	if ((barChartData[1].total/barChartData[0].total).toFixed(2)>1){
+		    	if (diff>1){
 		    	return "red"
 		    }else{
 		    	return "green"
 		    }
 			})
-		    .style("font-weight", "bold");
+		    .style("font-weight", "bold")
 
-		
+		// add a line to explicitly let the user now what is happening with the scenario.
+		var reportText = "Currently we need " + diff + " Chautauquas to support the current life style of the people."
+		if (diff>1){
+			reportText+=" We need you to find a better solution that can support the population on the resources of the county."
+		}else{
+			reportText+=" Mission accomplished... Congratulations!"
+		};
+
+		d3.select("#barChartReport")
+			.text(reportText)
+			.style("font-size", "1.5em")
+		    .style("color", function(){
+		    	if (diff>1){
+		    	return "red"
+		    }else{
+		    	return "green"
+		    }
+			});
+
 		updateBarChart = function updateBarChart(){
 			
 			//reset current values
@@ -887,20 +916,47 @@
 
 			x.domain([0, d3.max(barChart.data(), function(d) { return d.total;})]);
 
-			bars.data(function(d) { return d.values; })
+			barChartSvg.selectAll(".x").transition().duration(500).call(xAxis);
+
+			barChart.selectAll("rect").data(function(d) { return d.values; })
 			    .transition()
 			    //.delay(function(d, i) { return i * 50})
 			    .attr("x", function(d) { return x(d.x0);})
 	        	.attr("width", function(d) {return x(d.x1) - x(d.x0);});
 	    	
 
-	    	d3.selectAll(".bars").selectAll("title").text(function(d){return d.landuse + "> Area: " + (d.x1 - d.x0).toFixed(2);});
+	    	barChart.selectAll("title")
+	    		.data(function(d) { return d.values; })
+	    		.text(function(d){return d.landuse + "> Area: " + (d.x1 - d.x0).toFixed(2);});
+	    	
+	    	var diff = (barChartData[1].total/barChartData[0].total).toFixed(2);
 			
 			// update text
 			d3.select("#barChartComparison").select("span")
-	    		.text((barChart.data()[1].total/barChart.data()[0].total).toFixed(2) + "X")
+	    		.text( diff + "X")
 			    .style("color", function(){
-			    	if ((barChart.data()[1].total/barChart.data()[0].total).toFixed(2)>1){
+			    	if (diff>1){
+			    	return "red"
+			    }else{
+			    	return "green"
+			    }
+				});
+
+
+			// add a line to explicitly let the user now what is happening with the scenario.
+			var reportText = "You need " + diff + " Chautauquas to support this scenario."
+			if (diff>1){
+				reportText+=" Oops!!!"
+			}else{
+				reportText+=" Mission accomplished... Congratulations!"
+			};
+
+			d3.select("#barChartReport")
+				.style("font-size", "1.5em")
+				.transition().duration(2000)
+				.text(reportText)
+			    .style("color", function(){
+			    	if (diff>1){
 			    	return "red"
 			    }else{
 			    	return "green"
@@ -1082,7 +1138,7 @@
 			// Note: we disable elements AFTER the form data has been serialized.
 			// Disabled form elements will not be serialized.
 			$inputs.prop("disabled", true);
-			$('#result').text('    Sending data...');
+			$('#result').text('    Calculating new land area...');
 		
 			// fire off the request to /form.php
 			request = $.ajax({
@@ -1094,7 +1150,7 @@
 			// callback handler that will be called on success
 			request.done(function (response, textStatus, jqXHR){
 				// log a message to the console
-				$('#result').text(" Done!");
+				$('#result').text(" Done...");
 				
 				// map land need 
 				totalLandNeedPerPerson = response.newValues.map(function(d){return {landuse:d[0], primary:d[1], support:d[2], total:d[1]+d[2]}});
