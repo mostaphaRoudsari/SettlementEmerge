@@ -119,7 +119,7 @@
 		    		<h1>The New Chautauqua Game: <span style = "font-size:0.5em"> Designing the Renewable City and Region Using e[m]ergy Accounting</span></h1>
 		    </div>
 		    <div id="title" class="col-xs-2">
-			    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#collapseExample" aria-label="Left Align" aria-expanded="false" aria-controls="collapseExample" style="margin-top:15%">
+			    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#collapseExample" aria-label="Right Align" aria-expanded="false" aria-controls="collapseExample" style="margin-top:15%">
 	  			Read how to use this page?
 				</button>
 			</div>
@@ -347,7 +347,7 @@
 								Waste Produced
 							</div>
 							<div class="col-xs-12">
-								<input type="text" id="nWasteRecycling" name="nWasteRecycling" value="100">
+								<input type="text" id="nWasteRecycling" name="nWasteRecycling" value="55">
 								Waste Recycling
 							</div>
 							<div class="col-xs-12">
@@ -472,19 +472,20 @@
 	        });
 	       	
 	       	$("#nGoodPurchased").ionRangeSlider({
-	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 	        
 	        $("#nWasteProduced").ionRangeSlider({
-	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });	        
 	       	
 	       	$("#nWasteRecycling").ionRangeSlider({
-	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ","
+	            , keyboard: true, keyboard_step: 1
 	        });
 	       	
 	       	$("#nWaterUsage").ionRangeSlider({
-	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 
 	    });
