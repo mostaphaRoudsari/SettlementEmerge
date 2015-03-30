@@ -883,9 +883,9 @@
 		    .style("font-weight", "bold")
 
 		// add a line to explicitly let the user now what is happening with the scenario.
-		var reportText = "Currently we need " + diff + " Chautauquas to support the current life style of the people."
+		var reportText = "We need " + diff + " Chautauqua Countys to support the current life style of the population."
 		if (diff>1){
-			reportText+=" We need you to find a better solution that can support the population on the resources of the county."
+			reportText+=" We need your help in identifying a better solution that only uses the resources of the county."
 		}else{
 			reportText+=" Mission accomplished... Congratulations!"
 		};
@@ -944,11 +944,10 @@
 
 
 			// add a line to explicitly let the user now what is happening with the scenario.
-			var reportText = "You need " + diff + " Chautauquas to support this scenario."
 			if (diff>1){
-				reportText+=" Oops!!!"
+				reportText ="Oops! You need " + diff + " Chautauquas to support this lifestyle. Maybe you should try something different?"
 			}else{
-				reportText+=" Mission accomplished... Congratulations!"
+				reportText =" This scenario needs only " + diff + " of Chautauquas resources. Mission accomplished... Congratulations!"
 			};
 
 			d3.select("#barChartReport")
