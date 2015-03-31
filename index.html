@@ -61,11 +61,11 @@
 		}
 		
 		.hull {
-		  fill: orange;
+		  fill: white;
 		  stroke: black;
-		  stroke-width: 2px;
+		  stroke-width: 3px;
 		  stroke-linejoin: round;
-		  opacity: .5;
+		  opacity: .4;
 		}
 
 		hr {
@@ -564,13 +564,26 @@
 		var landCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 		var tempLandCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 		
-		var activeSettlements;
+		var initialSettlements,
+			activeSettlements;
 
 		// calculate number of cells needed for each city for each landuse
 		
-		var calculateSettlementsNeed = function calculateSettlementsNeed(settlements){
+		calculateSettlementsNeed = function calculateSettlementsNeed(){
 				
-				activeSettlements = settlements.filter(function(d){return d.population!=0});
+				// reset taken points for every point
+	        	initialSettlements.forEach(function(settlement){
+
+	        				settlement.takenPoints = [];
+
+                			d3.select("#hull" + settlement.nospacename)
+                				.datum(d3.geom.hull(settlement.takenPoints))
+                				.transition()
+                				.duration(2000)
+                				.attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+                			});
+
+				activeSettlements = initialSettlements.filter(function(d){return d.population!=0});
 
 				activeSettlements.forEach(function(settlement){
 					
@@ -609,6 +622,7 @@
 		//d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/bitmapdata.json", function(data){
 		d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/bitmapdata_LR.json", function(data){
 		
+		initialSettlements = settlements;
 
 		// population table - Based on: http://christopheviau.com/d3_tutorial/
 		settlements.forEach(function(d){
@@ -717,10 +731,7 @@
 	            })
 	        });
 		*/
-
-		var hull = svg.append("path")
-    		.attr("class", "hull");
-
+		
 		updatePopulation = function updatePopulation(){
 			// re-calculate total population
 			totalPopulation = 0;
@@ -792,11 +803,13 @@
                 .on("click", function(d){
                 	// console.log(d.takenPoints);
                 	// I think I will remove this from here to the end of each calculation so user can draw it all toghether if needed
-                	hull.datum(d3.geom.hull(d.takenPoints)).attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+                	d3.select("#hull" + d.nospacename).datum(d3.geom.hull(d.takenPoints))
+                		.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+                		.attr("opacity", "0.4");
                 });
       	
       	// add name and population of the cities to map
-      	svg.selectAll("text")
+      	svg.selectAll("text.populationText")
 			.data(settlements)
 			.enter().append("text")
 			.attr("class", "populationText")
@@ -810,7 +823,6 @@
       		.text(function(d){return (d.name + ": " + d.population);});
 
 		// hide all of them for now
-
 		if (showCityNames == false) d3.selectAll(".populationText").attr('visibility', 'hidden');
 
 		d3.select("#showCities").on("click", function(){
@@ -838,7 +850,28 @@
 		// I think it is useful once they are taken by any of the cities
 		// grid.append("title").text("some text")
 
+		// add a line for each city
 
+		svg.selectAll("line")
+			.data(settlements)
+			.enter().append("line")
+				.attr("class", "cityLines")
+				.attr("id", function(d){return d.name;})
+				.attr("x1", function(d){return d.x;})
+				.attr("y1", function(d){return d.y;})
+				.attr("x2", function(d){return d.x;})
+				.attr("y2", function(d){return d.y;})
+				.style("stroke", "red")
+				.style("stroke-width", 1.5);
+
+		// add a hull for each city
+		hullGroup = svg.selectAll(".hull")
+					.data(settlements)
+					.enter().append("path")
+					.attr("class", "hull")
+					.attr("id", function(d){return "hull" + d.name});
+
+		
 		// draw bar charts
 		// landAreaAvailable vs (totalLandNeedPerPerson * totalPopulation)
 		var barChartMargin = {top:20, right:0, bottom:0, left:125};
@@ -1045,7 +1078,7 @@
 		      	// update circles and text
 		      	updatePopulation();
 
-		      	calculateSettlementsNeed(settlements);
+		      	calculateSettlementsNeed();
 			}
 
 		  });
@@ -1099,9 +1132,9 @@
 							.delay(function(d){
 								// push the point to taken points
 								// I will use this to draw boundary for each city
-								settlement.takenPoints.push([d.x + (gridSize/2), d.y + (gridSize/2)]);
+								settlement.takenPoints.push([d.x + (gridSize/2),d.y + (gridSize/2)]);
 								d.isTaken = true;
-
+    							
 								// update available resources
 								numOfTotalAvailableCells--;
 								tempLandCellsCount.lu--;
@@ -1115,8 +1148,7 @@
     						.duration(50)
     						.attr("width", gridSize)
     						.attr("height", gridSize);
-    						//.attr("fill", "black");
-    					//svg.append("line")
+    						//.attr("fill", "black");    					
     				});
     			}
 				
@@ -1145,8 +1177,16 @@
 						$('audio#tetrisTune')[0].currentTime = 0;
 						// play the end of the song
 						$('audio#tetrisSuccess')[0].play();
-    					
-    					}, 2000);
+
+						activeSettlements.forEach(function(settlement){
+                			d3.select("#hull" + settlement.nospacename)
+                				.datum(d3.geom.hull(settlement.takenPoints))
+                				.transition()
+                				.duration(2000)
+                				.attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+                			});
+
+    					}, 4000);
 			    }
 		};
 
@@ -1162,11 +1202,8 @@
         		.attr("width", gridSize/2)
         		.attr("height", gridSize/2);
 
-	       	// reset taken points for every point
-	        settlements.forEach(function(settlement){settlement.takenPoints = [];});
-
         	// calculate need for each city
-        	calculateSettlementsNeed(settlements);
+        	calculateSettlementsNeed();
 			
 			counter = 0;
 
@@ -1247,6 +1284,8 @@
 				// map land need 
 				totalLandNeedPerPerson = response.newValues.map(function(d){return {landuse:d[0], primary:d[1], support:d[2], total:d[1]+d[2]}});
 
+				calculateSettlementsNeed();
+				
 				// update bar chart
 				updateBarChart();
 			});
