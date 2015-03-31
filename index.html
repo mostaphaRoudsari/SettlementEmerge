@@ -124,14 +124,19 @@
 		    <div id="title" class="col-xs-10">
 		    		<h1>The New Chautauqua Game: <span style = "font-size:0.5em"> Designing the Renewable City and Region Using e[m]ergy Accounting</span></h1>
 		    </div>
-		    <div id="title" class="col-xs-2">
-			    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#collapseExample" aria-label="Right Align" aria-expanded="false" aria-controls="collapseExample" style="margin-top:15%">
-	  			Read how to use this page?
+			<div class="btn-toolbar col-xs-2" role="toolbar">
+		      <div class="btn-group" style="margin-top:2em">
+		        <button type="button" class="btn btn-default" id="soundControl">
+					<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
 				</button>
-			</div>
+				<button type="button" class="btn btn-default" data-toggle="collapse" data-target="#collapseDiv" aria-controls="collapseExample">
+		  			<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+				</button>
+		      </div>
+		    </div>
 	    </div>
 	    
-		<div class=" col-xs-12 collapse" id="collapseExample">
+		<div class=" col-xs-12 collapse" id="collapseDiv">
   			<div class="well">
     			<p>The New Chautauqua Game evaluates the land needed to harvest and concentrate renewable energies to support the population of the county.</p> 
 				<p>To play the game adjust the slider bars below to modify the rates of production and consumption in the county, then click on “Check Land Area” to see if your scenario can support the population on the resources of the county.</p>
@@ -323,7 +328,7 @@
 			                </div>
 			                
 			                <div class="col-xs-12">
-								<progress style="width:100%" value="0" max="144" id="progBar">
+								<progress style="width:100%" value="0" max="100" id="progBar">
 							    	<span id="calcProgress">
 							        	<!-- Fallback goes here -->
 							    	</span>
@@ -390,6 +395,11 @@
 	    <!-- /.row -->
 	    <!-- /.container -->
 	<script type="text/javascript">
+
+		d3.select('#soundControl').on('click', function (e) {
+			// select audio and mute it
+			alert("Seriously!? There is no such an option currently available. This game comes with music. Sorry!")
+			});
 
 		// set up sliders
 	    jQuery( document ).ready(
@@ -963,8 +973,6 @@
 				});
 		};
 
-		debugger;
-
 		var populationSc = [{Panama:4572, "Cherry Creek":5211, Ripley:2452, Brocton:5579,
 							Westfield:4896, Sherman:4813, Sinclairville: 4674, Fredonia: 11702, Cassadaga: 4527,
 							"Chautauqua Institution": 3618, Frewsburg: 5999, Busti: 4122, Kennedy: 4558, "Sunset Bay": 637,
@@ -1026,106 +1034,85 @@
 		}
 
 
+
+		var rounds = [0, 1]; //, 2];
+		totalCases = rounds.length * settlements.length * landuse.length;
+
+		function findCells() {
+				var roundIndex = parseInt(counter/(settlements.length * landuse.length))
+				var cityIndex = parseInt((counter/landuse.length)%settlements.length);
+				var landuseIndex = parseInt(counter%landuse.length);
+
+				var settlement = settlements[cityIndex];
+				var round = rounds[roundIndex];
+
+				debugger;
+				// do stuff
+				var ids = settlement.sortedResourcesIds[landuse[landuseIndex]][round]; //find ids of resources based on rank
+
+				if(ids!=null){
+    				ids.forEach(function(id, i){
+    					d3.select("#id_" + id)
+    						.transition()
+							.delay(function(d){
+								// push the point to taken points
+								// I will use this to draw boundary for each city
+								settlement.takenPoints.push([d.x + (gridSize/2), d.y + (gridSize/2)]);
+
+								// manage delay in a way that it takes the same for all of cities?
+								return (i + 2) * 20;})
+    						.duration(50)
+    						.attr("width", gridSize)
+    						.attr("height", gridSize);
+    						//.attr("fill", "black");
+    					//svg.append("line")
+    				});
+    			}
+
+				counter++;    
+				var progress = 	((counter/totalCases)* 100).toFixed(1);
+
+				$('#progUpdate').empty().append("(" + progress + "%) Round " + round + "> Searching for " + landuse[landuseIndex] + " for " + settlement.name);
+
+		    	$('#progBar').val((counter/totalCases) * 100);
+
+			    if (counter < totalCases) {
+
+			        setTimeout(findCells, 0);
+			    } else{
+			    	if (counter==100) $('#progUpdate').empty().append("Calculation complete!");
+			    	
+    				setTimeout(function(){
+	    				// stop playing the music
+						$('audio#tetrisTune')[0].pause();
+						$('audio#tetrisTune')[0].currentTime = 0;
+						// play the end of the song
+						$('audio#tetrisSuccess')[0].play();
+    					
+    					}, 2000);
+			    }
+		};
+
 		function findResources(){
 			// resize grid
 			grid.transition()
 	        		.duration(1000)
 	        		.attr("width", gridSize/2)
 	        		.attr("height", gridSize/2);
-
-			// add a progress bar!
-			var counter = 0;
-			settlements.forEach(function(settlement){settlement.takenPoints = [];});
 			
-			
-			function findCells() {
-				// just for test running the first round
-	        	alert ("It is disabed for now and I'm working on it... Sorry! :/");
-	        	return false;
-	        	for (var rank = 0; rank < 1; rank++) {
-	        		settlements.forEach(function(settlement){
-	        			var resources = settlement.sortedResourcesIds;
-	        			var landuses = d3.keys(resources);
-	        			
-	        			landuses.forEach(function(landuse){
-	        				var ids = resources[landuse][rank];
-	        				counter+=1;
-							
-							console.log(rank + ":" + settlement.name + ": " + landuse);	    
-						}); // for each land use
-	        		}); // for each settlements
-					
-					console.log(counter);
-				}; // for each rank
+			counter = 0;
 
-				// $('#progUpdate').empty().append(settlement.name + ": " + landuse);
-				$('#progBar').val(counter);
-				if (counter <= 288) {
-				    setTimeout(findCells, 200);
-				}
-			}
+			$('#progUpdate').empty();
 
-			findCells();
-		};
-
-	/*	
-			var progBar = d3.select("#progBar")[0][0];
-	    	var percentDone = 0;
-	    	progBar.value = percentDone;
-
-	        // re-set taken points
+	       	// reset taken points for every point
 	        settlements.forEach(function(settlement){settlement.takenPoints = [];});
 
-	        	(function doTake(){
-	        	// just for test running the first round
-	        	for (var rank = 0; rank < 1; rank++) {
-	        		settlements.forEach(function(settlement){
-	        			var resources = settlement.sortedResourcesIds;
-	        			var landuses = d3.keys(resources);
-	        			
-	        			landuses.forEach(function(landuse){
-	        				var ids = resources[landuse][rank];
-	        				percentDone += 1;
-	        				
-	        				$('#progBar')[0].value = percentDone;
-	        				$('#progUpdate').empty().append(settlement.name + ": " + landuse);
-		        			/*
-		        			if(ids!=null){
-	        					$('#progUpdate').empty().append(settlement.name + ": " + landuse);
-		        				ids.forEach(function(id, i){
-		        					d3.select("#id_" + id)
-		        						.transition()
-										.delay(function(d){
-											// also push the point to taken points
-											// I will use this to draw boundary for each city
-											settlement.takenPoints.push([d.x + (gridSize/2), d.y + (gridSize/2)]);
+			findCells();
 
-											// manage delay in a way that it takes the same for all of cities?
-											return (i + 2) * 20;})
-		        						.duration(50)
-		        						.attr("width", gridSize)
-		        						.attr("height", gridSize);
-		        						//.attr("fill", "black");
-		        					//svg.append("line")
+			// start playing the music
+			$('audio#tetrisTune')[0].play();
+	    }
 
-		        				});
-	        				}
-
-		        		// debugger;
-	        			});
-	        		});
-	        	}
-
-				if (percentDone==144) $('#progUpdate').empty().append("Calculation complete!");
-				if (percentDone<144) {
-        			setTimeout(doTake, 10000);
-    				}
-
-		})()
-
-	};
-
-	*/
 		// run the scenario
 	    d3.select("#play")
 	        .on("click", function() {
@@ -1221,7 +1208,18 @@
 	});
 
 	</script>
+    
+    <!--
+    	Tetris music track. Credit goes to Hirokazu Tanaka.
+		http://www.vgmpf.com/Wiki/index.php?title=Tetris_(NES)
+	-->
+	<audio id="tetrisTune">
+			<source src="http://www.vgmpf.com/Wiki/images/1/1b/02_-_Tetris_-_NES_-_Music_1_-_Fast.ogg">
+	</audio>
 
+	<audio id="tetrisSuccess">
+		<source src="http://www.vgmpf.com/Wiki/images/a/a6/07_-_Tetris_-_NES_-_Success%21.ogg">
+	</audio>
 		<!--
 	    <!-- /.footer
 	    <div class="row-fluid">
