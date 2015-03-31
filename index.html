@@ -551,15 +551,16 @@
 			originalPopulation = 0,
 			totalPopulation = 0;
 
-		// this is the base case as for 28 March 2015
+		// this is the base case place holder
 		var totalLandNeedPerPerson = [
-						{landuse: "Water", primary: 0.3690090869394135, support: 0.11649527487027729, total: 0.48550436180969075} ,
-						{landuse: "Forest", primary: 28.79131688193631, support: 15.794500638903703, total: 44.58581752084001},
-						{landuse: "Agriculture", primary: 2.574507590935015, support: 283.08430517706574, total: 285.65881276800076},
-						{landuse: "Developed", primary: 0.3694624197743753, support: 631.4775279352248, total: 631.8469903549991},
+						{landuse: "Water", primary: 0, support: 0, total: 0} ,
+						{landuse: "Forest", primary: 0, support: 0, total: 0},
+						{landuse: "Agriculture", primary: 0, support: 0, total: 0},
+						{landuse: "Developed", primary: 0, support: 0, total: 0},
 						{landuse: "Natural", primary: 0, support: 0, total: 0},
 						{landuse: "Wetlands", primary: 0, support: 0, total: 0}]
 
+		
 		// place holder for number of cells
 		var landCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 		var tempLandCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
@@ -574,9 +575,10 @@
 				// reset taken points for every point
 	        	initialSettlements.forEach(function(settlement){
 
-	        				settlement.takenPoints = [];
+	        				settlement.takenPoints = [[settlement.x, settlement.y], [settlement.x + gridSize/2, settlement.y+ gridSize/2]];
 
                 			d3.select("#hull" + settlement.nospacename)
+                				.filter(function(){return settlement.takenPoints.length!=0})
                 				.datum(d3.geom.hull(settlement.takenPoints))
                 				.transition()
                 				.duration(2000)
@@ -644,7 +646,7 @@
 
 		// start creating the map
 		var numOfColumns = data.numOfCol;
-		var gridSize = Math.min(mapHeight,mapWidth)/numOfColumns;
+		gridSize = Math.min(mapHeight,mapWidth)/numOfColumns;
 		cells = data.cells;
 		numOfTotalAvailableCells = cells.length;
 		// total area in acres is 960115
@@ -803,7 +805,9 @@
                 .on("click", function(d){
                 	// console.log(d.takenPoints);
                 	// I think I will remove this from here to the end of each calculation so user can draw it all toghether if needed
-                	d3.select("#hull" + d.nospacename).datum(d3.geom.hull(d.takenPoints))
+                	d3.select("#hull" + d.nospacename)
+						.filter(function(){return settlement.takenPoints.length!=0})
+                		.datum(d3.geom.hull(d.takenPoints))
                 		.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
                 		.attr("opacity", "0.4");
                 });
@@ -961,14 +965,7 @@
 			})
 		    .style("font-weight", "bold")
 
-		// add a line to explicitly let the user now what is happening with the scenario.
-		var reportText = "We need " + diff + " Chautauqua Countys to support the current life style of the population."
-		if (diff>1){
-			reportText+=" We need your help in identifying a better solution that only uses the resources of the county."
-		}else{
-			reportText+=" Mission accomplished... Congratulations!"
-		};
-
+		var reportText = "";
 		d3.select("#barChartReport")
 			.text(reportText)
 			.style("font-size", "1.5em")
@@ -1082,6 +1079,25 @@
 			}
 
 		  });
+		
+		setTimeout(function(){
+			
+			// initiate base case
+			$("#inputSliders").submit();
+
+			// add a line to explicitly let the user now what is happening with the scenario.
+			var reportText = "We need " + diff + " Chautauqua Countys to support the current life style of the population."
+			
+			if (diff>1){
+				reportText+=" We need your help in identifying a better solution that only uses the resources of the county."
+			}else{
+				reportText+=" Mission accomplished... Congratulations!"
+			};
+
+			// update bar chart
+			updateBarChart();
+			}, 1000);
+
 
 		function getDistance(x0, y0, x1, y1){
 			// this is not the correct distance but since I just use it for comparison
@@ -1180,6 +1196,7 @@
 
 						activeSettlements.forEach(function(settlement){
                 			d3.select("#hull" + settlement.nospacename)
+                				.filter(function(){return settlement.takenPoints.length!=0})
                 				.datum(d3.geom.hull(settlement.takenPoints))
                 				.transition()
                 				.duration(2000)
