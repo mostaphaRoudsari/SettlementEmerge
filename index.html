@@ -61,11 +61,11 @@
 		}
 		
 		.hull {
-		  fill: orange;
+		  fill: white;
 		  stroke: black;
-		  stroke-width: 2px;
+		  stroke-width: 3px;
 		  stroke-linejoin: round;
-		  opacity: .5;
+		  opacity: .4;
 		}
 
 		hr {
@@ -124,14 +124,19 @@
 		    <div id="title" class="col-xs-10">
 		    		<h1>The New Chautauqua Game: <span style = "font-size:0.5em"> Designing the Renewable City and Region Using e[m]ergy Accounting</span></h1>
 		    </div>
-		    <div id="title" class="col-xs-2">
-			    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#collapseExample" aria-label="Right Align" aria-expanded="false" aria-controls="collapseExample" style="margin-top:15%">
-	  			Read how to use this page?
+			<div class="btn-toolbar col-xs-2" role="toolbar">
+		      <div class="btn-group" style="margin-top:2em">
+		        <button type="button" class="btn btn-default" id="soundControl">
+					<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
 				</button>
-			</div>
+				<button type="button" class="btn btn-default" data-toggle="collapse" data-target="#collapseDiv" aria-controls="collapseExample">
+		  			<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+				</button>
+		      </div>
+		    </div>
 	    </div>
 	    
-		<div class=" col-xs-12 collapse" id="collapseExample">
+		<div class=" col-xs-12 collapse" id="collapseDiv">
   			<div class="well">
     			<p>The New Chautauqua Game evaluates the land needed to harvest and concentrate renewable energies to support the population of the county.</p> 
 				<p>To play the game adjust the slider bars below to modify the rates of production and consumption in the county, then click on “Check Land Area” to see if your scenario can support the population on the resources of the county.</p>
@@ -323,7 +328,7 @@
 			                </div>
 			                
 			                <div class="col-xs-12">
-								<progress style="width:100%" value="0" max="144" id="progBar">
+								<progress style="width:100%" value="0" max="100" id="progBar">
 							    	<span id="calcProgress">
 							        	<!-- Fallback goes here -->
 							    	</span>
@@ -390,6 +395,11 @@
 	    <!-- /.row -->
 	    <!-- /.container -->
 	<script type="text/javascript">
+
+		d3.select('#soundControl').on('click', function (e) {
+			// select audio and mute it
+			alert("Seriously!? There is no such an option currently available. This game comes with music. Sorry!")
+			});
 
 		// set up sliders
 	    jQuery( document ).ready(
@@ -475,7 +485,7 @@
 	        });
 
 	        $("#nDensity").ionRangeSlider({
-	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            hide_min_max: true, min: 10, max: 1000, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 	        $("#nBldgSizeEff").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ",",
@@ -550,6 +560,53 @@
 						{landuse: "Natural", primary: 0, support: 0, total: 0},
 						{landuse: "Wetlands", primary: 0, support: 0, total: 0}]
 
+		// place holder for number of cells
+		var landCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+		var tempLandCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+		
+		var initialSettlements,
+			activeSettlements;
+
+		// calculate number of cells needed for each city for each landuse
+		
+		calculateSettlementsNeed = function calculateSettlementsNeed(){
+				
+				// reset taken points for every point
+	        	initialSettlements.forEach(function(settlement){
+
+	        				settlement.takenPoints = [];
+
+                			d3.select("#hull" + settlement.nospacename)
+                				.datum(d3.geom.hull(settlement.takenPoints))
+                				.transition()
+                				.duration(2000)
+                				.attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+                			});
+
+				activeSettlements = initialSettlements.filter(function(d){return d.population!=0});
+
+				activeSettlements.forEach(function(settlement){
+					
+					numOfTotalAvailableCells = cells.length;
+
+					// for each land use
+					totalLandNeedPerPerson.forEach(function(lu){
+						// number of cells = (population  * needareaPerPerson) /cell Area
+						var numOfCells = parseInt((settlement.population * lu.primary)/ cellArea);
+						
+						settlement.resourcesNeed[lu.landuse] = numOfCells;
+						
+						settlement.totalResourcesNeed += numOfCells;					
+					});
+				
+					if (settlement.totalResourcesNeed!=0) settlement.isSatisfied = false;
+				});
+				
+				d3.keys(tempLandCellsCount).forEach(function(lu){
+					tempLandCellsCount.lu = landCellsCount.lu;
+				})
+		}
+
 
 		// create population scale for circle radius
 		var popScale = d3.scale.linear();
@@ -565,11 +622,15 @@
 		//d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/bitmapdata.json", function(data){
 		d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/bitmapdata_LR.json", function(data){
 		
+		initialSettlements = settlements;
 
 		// population table - Based on: http://christopheviau.com/d3_tutorial/
 		settlements.forEach(function(d){
 				totalPopulation += +d.population;
 				originalPopulation += +d.population;
+				d.resourcesNeed = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+				d.totalResourcesNeed = 0;
+				d.isSatisfied = true;
 			});
 
 		popScale.domain(d3.extent(settlements, function(d){return d.population;}));
@@ -584,10 +645,11 @@
 		// start creating the map
 		var numOfColumns = data.numOfCol;
 		var gridSize = Math.min(mapHeight,mapWidth)/numOfColumns;
-		var cells = data.cells;
-		// total area in acres is 1581470
-		var totalArea = 960115; //1581470;
-		var cellArea = totalArea / cells.length;
+		cells = data.cells;
+		numOfTotalAvailableCells = cells.length;
+		// total area in acres is 960115
+		var totalArea = 960115;
+		cellArea = totalArea / numOfTotalAvailableCells;
 
 		popScale.range([Math.min(8, 2*gridSize), Math.min(4, gridSize)]);
 		
@@ -604,8 +666,6 @@
 			.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");			
 		
-		// place holder for number of cells
-		var landCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 
 		// add grid cells
 		var grid = svg.selectAll("rect")
@@ -671,12 +731,9 @@
 	            })
 	        });
 		*/
-
-		var hull = svg.append("path")
-    		.attr("class", "hull");
-
+		
 		updatePopulation = function updatePopulation(){
-						// re-calculate total population
+			// re-calculate total population
 			totalPopulation = 0;
 			settlements.forEach(function(d){
 				totalPopulation += +d.population;
@@ -746,11 +803,13 @@
                 .on("click", function(d){
                 	// console.log(d.takenPoints);
                 	// I think I will remove this from here to the end of each calculation so user can draw it all toghether if needed
-                	hull.datum(d3.geom.hull(d.takenPoints)).attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+                	d3.select("#hull" + d.nospacename).datum(d3.geom.hull(d.takenPoints))
+                		.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+                		.attr("opacity", "0.4");
                 });
       	
       	// add name and population of the cities to map
-      	svg.selectAll("text")
+      	svg.selectAll("text.populationText")
 			.data(settlements)
 			.enter().append("text")
 			.attr("class", "populationText")
@@ -764,7 +823,6 @@
       		.text(function(d){return (d.name + ": " + d.population);});
 
 		// hide all of them for now
-
 		if (showCityNames == false) d3.selectAll(".populationText").attr('visibility', 'hidden');
 
 		d3.select("#showCities").on("click", function(){
@@ -792,7 +850,28 @@
 		// I think it is useful once they are taken by any of the cities
 		// grid.append("title").text("some text")
 
+		// add a line for each city
 
+		svg.selectAll("line")
+			.data(settlements)
+			.enter().append("line")
+				.attr("class", "cityLines")
+				.attr("id", function(d){return d.name;})
+				.attr("x1", function(d){return d.x;})
+				.attr("y1", function(d){return d.y;})
+				.attr("x2", function(d){return d.x;})
+				.attr("y2", function(d){return d.y;})
+				.style("stroke", "red")
+				.style("stroke-width", 1.5);
+
+		// add a hull for each city
+		hullGroup = svg.selectAll(".hull")
+					.data(settlements)
+					.enter().append("path")
+					.attr("class", "hull")
+					.attr("id", function(d){return "hull" + d.name});
+
+		
 		// draw bar charts
 		// landAreaAvailable vs (totalLandNeedPerPerson * totalPopulation)
 		var barChartMargin = {top:20, right:0, bottom:0, left:125};
@@ -963,8 +1042,6 @@
 				});
 		};
 
-		debugger;
-
 		var populationSc = [{Panama:4572, "Cherry Creek":5211, Ripley:2452, Brocton:5579,
 							Westfield:4896, Sherman:4813, Sinclairville: 4674, Fredonia: 11702, Cassadaga: 4527,
 							"Chautauqua Institution": 3618, Frewsburg: 5999, Busti: 4122, Kennedy: 4558, "Sunset Bay": 637,
@@ -1000,6 +1077,8 @@
 
 		      	// update circles and text
 		      	updatePopulation();
+
+		      	calculateSettlementsNeed();
 			}
 
 		  });
@@ -1025,107 +1104,117 @@
 			return true;
 		}
 
+		rounds = d3.range(settlements.length);
+		totalCases = rounds.length * settlements.length * landuse.length;
 
-		function findResources(){
-			// resize grid
-			grid.transition()
-	        		.duration(1000)
-	        		.attr("width", gridSize/2)
-	        		.attr("height", gridSize/2);
+		function findCells() {
+				var roundIndex = parseInt(counter/(activeSettlements.length * landuse.length))
+				var cityIndex = parseInt((counter/landuse.length)%activeSettlements.length);
+				var landuseIndex = parseInt(counter%landuse.length);
 
-			// add a progress bar!
-			var counter = 0;
-			settlements.forEach(function(settlement){settlement.takenPoints = [];});
-			
-			
-			function findCells() {
-				// just for test running the first round
-	        	alert ("It is disabed for now and I'm working on it... Sorry! :/");
-	        	return false;
-	        	for (var rank = 0; rank < 1; rank++) {
-	        		settlements.forEach(function(settlement){
-	        			var resources = settlement.sortedResourcesIds;
-	        			var landuses = d3.keys(resources);
-	        			
-	        			landuses.forEach(function(landuse){
-	        				var ids = resources[landuse][rank];
-	        				counter+=1;
-							
-							console.log(rank + ":" + settlement.name + ": " + landuse);	    
-						}); // for each land use
-	        		}); // for each settlements
-					
-					console.log(counter);
-				}; // for each rank
+				var settlement = activeSettlements[cityIndex];
+				var lu = landuse[landuseIndex];
+				var round = rounds[roundIndex];
 
-				// $('#progUpdate').empty().append(settlement.name + ": " + landuse);
-				$('#progBar').val(counter);
-				if (counter <= 288) {
-				    setTimeout(findCells, 200);
-				}
-			}
+				// do stuff
+				var ids = settlement.sortedResourcesIds[landuse[landuseIndex]][round]; //find ids of resources based on rank
 
-			findCells();
+				// check if resources are needed and if there is still anything left
+				if (settlement.totalResourcesNeed == 0) settlement.isSatisfied;
+
+				if (settlement.isSatisfied || tempLandCellsCount.lu ==0 || settlement.resourcesNeed.lu == 0) ids = null;
+
+				if(ids!=null){
+    				ids.forEach(function(id, i){
+    					d3.select("#id_" + id)
+    						.filter(function(d){return !d.isTaken})
+    						.transition()
+							.delay(function(d){
+								// push the point to taken points
+								// I will use this to draw boundary for each city
+								settlement.takenPoints.push([d.x + (gridSize/2),d.y + (gridSize/2)]);
+								d.isTaken = true;
+    							
+								// update available resources
+								numOfTotalAvailableCells--;
+								tempLandCellsCount.lu--;
+
+								// update need
+								settlement.totalResourcesNeed--;
+								settlement.resourcesNeed.lu--;
+
+								// manage delay in a way that it takes the same for all of cities?
+								return (i + 2) * 20;})
+    						.duration(50)
+    						.attr("width", gridSize)
+    						.attr("height", gridSize);
+    						//.attr("fill", "black");    					
+    				});
+    			}
+				
+				counter++;    
+				var progress = 	((counter/totalCases)* 100).toFixed(1);
+
+				$('#progUpdate').empty().append("(" + progress + "%) Round " + round + "> Searching for " + lu + " for " + settlement.name);
+
+		    	$('#progBar').val((counter/totalCases) * 100);
+
+    			
+			    if (counter < totalCases && numOfTotalAvailableCells>0) {
+
+			        setTimeout(findCells, 0);
+
+			    } else{
+			    	if (progress == 100.0){
+			    		$('#progUpdate').empty().append("Calculation complete!");
+			    	}else{
+			    		$('#progUpdate').empty().append("Ran out of resources!");
+			    	}
+			    	
+    				setTimeout(function(){
+	    				// stop playing the music
+						$('audio#tetrisTune')[0].pause();
+						$('audio#tetrisTune')[0].currentTime = 0;
+						// play the end of the song
+						$('audio#tetrisSuccess')[0].play();
+
+						activeSettlements.forEach(function(settlement){
+                			d3.select("#hull" + settlement.nospacename)
+                				.datum(d3.geom.hull(settlement.takenPoints))
+                				.transition()
+                				.duration(2000)
+                				.attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+                			});
+
+    					}, 4000);
+			    }
 		};
 
-	/*	
-			var progBar = d3.select("#progBar")[0][0];
-	    	var percentDone = 0;
-	    	progBar.value = percentDone;
+		function findResources(){
+			// reset data
+			grid.data().forEach(function(d){d.isTaken = false;})
+			
+			cities.attr("opacity", ".4");
 
-	        // re-set taken points
-	        settlements.forEach(function(settlement){settlement.takenPoints = [];});
+			// resize grid
+			grid.transition()
+        		.duration(1000)
+        		.attr("width", gridSize/2)
+        		.attr("height", gridSize/2);
 
-	        	(function doTake(){
-	        	// just for test running the first round
-	        	for (var rank = 0; rank < 1; rank++) {
-	        		settlements.forEach(function(settlement){
-	        			var resources = settlement.sortedResourcesIds;
-	        			var landuses = d3.keys(resources);
-	        			
-	        			landuses.forEach(function(landuse){
-	        				var ids = resources[landuse][rank];
-	        				percentDone += 1;
-	        				
-	        				$('#progBar')[0].value = percentDone;
-	        				$('#progUpdate').empty().append(settlement.name + ": " + landuse);
-		        			/*
-		        			if(ids!=null){
-	        					$('#progUpdate').empty().append(settlement.name + ": " + landuse);
-		        				ids.forEach(function(id, i){
-		        					d3.select("#id_" + id)
-		        						.transition()
-										.delay(function(d){
-											// also push the point to taken points
-											// I will use this to draw boundary for each city
-											settlement.takenPoints.push([d.x + (gridSize/2), d.y + (gridSize/2)]);
+        	// calculate need for each city
+        	calculateSettlementsNeed();
+			
+			counter = 0;
 
-											// manage delay in a way that it takes the same for all of cities?
-											return (i + 2) * 20;})
-		        						.duration(50)
-		        						.attr("width", gridSize)
-		        						.attr("height", gridSize);
-		        						//.attr("fill", "black");
-		        					//svg.append("line")
+			$('#progUpdate').empty();
 
-		        				});
-	        				}
+			findCells();
 
-		        		// debugger;
-	        			});
-	        		});
-	        	}
+			// start playing the music
+			$('audio#tetrisTune')[0].play();
+	    }
 
-				if (percentDone==144) $('#progUpdate').empty().append("Calculation complete!");
-				if (percentDone<144) {
-        			setTimeout(doTake, 10000);
-    				}
-
-		})()
-
-	};
-
-	*/
 		// run the scenario
 	    d3.select("#play")
 	        .on("click", function() {
@@ -1195,6 +1284,8 @@
 				// map land need 
 				totalLandNeedPerPerson = response.newValues.map(function(d){return {landuse:d[0], primary:d[1], support:d[2], total:d[1]+d[2]}});
 
+				calculateSettlementsNeed();
+				
 				// update bar chart
 				updateBarChart();
 			});
@@ -1221,7 +1312,18 @@
 	});
 
 	</script>
+    
+    <!--
+    	Tetris music track. Credit goes to Hirokazu Tanaka.
+		http://www.vgmpf.com/Wiki/index.php?title=Tetris_(NES)
+	-->
+	<audio loop id="tetrisTune">
+			<source src="http://www.vgmpf.com/Wiki/images/1/1b/02_-_Tetris_-_NES_-_Music_1_-_Fast.ogg">
+	</audio>
 
+	<audio id="tetrisSuccess">
+		<source src="http://www.vgmpf.com/Wiki/images/a/a6/07_-_Tetris_-_NES_-_Success%21.ogg">
+	</audio>
 		<!--
 	    <!-- /.footer
 	    <div class="row-fluid">
