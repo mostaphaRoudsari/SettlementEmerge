@@ -560,6 +560,40 @@
 						{landuse: "Natural", primary: 0, support: 0, total: 0},
 						{landuse: "Wetlands", primary: 0, support: 0, total: 0}]
 
+		// place holder for number of cells
+		var landCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+		var tempLandCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+		
+		var activeSettlements;
+
+		// calculate number of cells needed for each city for each landuse
+		
+		var calculateSettlementsNeed = function calculateSettlementsNeed(settlements){
+				
+				activeSettlements = settlements.filter(function(d){return d.population!=0});
+
+				activeSettlements.forEach(function(settlement){
+					
+					numOfTotalAvailableCells = cells.length;
+
+					// for each land use
+					totalLandNeedPerPerson.forEach(function(lu){
+						// number of cells = (population  * needareaPerPerson) /cell Area
+						var numOfCells = parseInt((settlement.population * lu.primary)/ cellArea);
+						
+						settlement.resourcesNeed[lu.landuse] = numOfCells;
+						
+						settlement.totalResourcesNeed += numOfCells;					
+					});
+				
+					if (settlement.totalResourcesNeed!=0) settlement.isSatisfied = false;
+				});
+				
+				d3.keys(tempLandCellsCount).forEach(function(lu){
+					tempLandCellsCount.lu = landCellsCount.lu;
+				})
+		}
+
 
 		// create population scale for circle radius
 		var popScale = d3.scale.linear();
@@ -580,6 +614,9 @@
 		settlements.forEach(function(d){
 				totalPopulation += +d.population;
 				originalPopulation += +d.population;
+				d.resourcesNeed = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+				d.totalResourcesNeed = 0;
+				d.isSatisfied = true;
 			});
 
 		popScale.domain(d3.extent(settlements, function(d){return d.population;}));
@@ -594,10 +631,11 @@
 		// start creating the map
 		var numOfColumns = data.numOfCol;
 		var gridSize = Math.min(mapHeight,mapWidth)/numOfColumns;
-		var cells = data.cells;
-		// total area in acres is 1581470
-		var totalArea = 960115; //1581470;
-		var cellArea = totalArea / cells.length;
+		cells = data.cells;
+		numOfTotalAvailableCells = cells.length;
+		// total area in acres is 960115
+		var totalArea = 960115;
+		cellArea = totalArea / numOfTotalAvailableCells;
 
 		popScale.range([Math.min(8, 2*gridSize), Math.min(4, gridSize)]);
 		
@@ -614,8 +652,6 @@
 			.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");			
 		
-		// place holder for number of cells
-		var landCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 
 		// add grid cells
 		var grid = svg.selectAll("rect")
@@ -686,7 +722,7 @@
     		.attr("class", "hull");
 
 		updatePopulation = function updatePopulation(){
-						// re-calculate total population
+			// re-calculate total population
 			totalPopulation = 0;
 			settlements.forEach(function(d){
 				totalPopulation += +d.population;
@@ -1008,6 +1044,8 @@
 
 		      	// update circles and text
 		      	updatePopulation();
+
+		      	calculateSettlementsNeed(settlements);
 			}
 
 		  });
@@ -1033,31 +1071,44 @@
 			return true;
 		}
 
-
-
-		var rounds = [0, 1]; //, 2];
+		rounds = d3.range(settlements.length);
 		totalCases = rounds.length * settlements.length * landuse.length;
 
 		function findCells() {
-				var roundIndex = parseInt(counter/(settlements.length * landuse.length))
-				var cityIndex = parseInt((counter/landuse.length)%settlements.length);
+				var roundIndex = parseInt(counter/(activeSettlements.length * landuse.length))
+				var cityIndex = parseInt((counter/landuse.length)%activeSettlements.length);
 				var landuseIndex = parseInt(counter%landuse.length);
 
-				var settlement = settlements[cityIndex];
+				var settlement = activeSettlements[cityIndex];
+				var lu = landuse[landuseIndex];
 				var round = rounds[roundIndex];
 
-				debugger;
 				// do stuff
 				var ids = settlement.sortedResourcesIds[landuse[landuseIndex]][round]; //find ids of resources based on rank
+
+				// check if resources are needed and if there is still anything left
+				if (settlement.totalResourcesNeed == 0) settlement.isSatisfied;
+
+				if (settlement.isSatisfied || tempLandCellsCount.lu ==0 || settlement.resourcesNeed.lu == 0) ids = null;
 
 				if(ids!=null){
     				ids.forEach(function(id, i){
     					d3.select("#id_" + id)
+    						.filter(function(d){return !d.isTaken})
     						.transition()
 							.delay(function(d){
 								// push the point to taken points
 								// I will use this to draw boundary for each city
 								settlement.takenPoints.push([d.x + (gridSize/2), d.y + (gridSize/2)]);
+								d.isTaken = true;
+
+								// update available resources
+								numOfTotalAvailableCells--;
+								tempLandCellsCount.lu--;
+
+								// update need
+								settlement.totalResourcesNeed--;
+								settlement.resourcesNeed.lu--;
 
 								// manage delay in a way that it takes the same for all of cities?
 								return (i + 2) * 20;})
@@ -1068,19 +1119,25 @@
     					//svg.append("line")
     				});
     			}
-
+				
 				counter++;    
 				var progress = 	((counter/totalCases)* 100).toFixed(1);
 
-				$('#progUpdate').empty().append("(" + progress + "%) Round " + round + "> Searching for " + landuse[landuseIndex] + " for " + settlement.name);
+				$('#progUpdate').empty().append("(" + progress + "%) Round " + round + "> Searching for " + lu + " for " + settlement.name);
 
 		    	$('#progBar').val((counter/totalCases) * 100);
 
-			    if (counter < totalCases) {
+    			
+			    if (counter < totalCases && numOfTotalAvailableCells>0) {
 
 			        setTimeout(findCells, 0);
+
 			    } else{
-			    	if (counter==100) $('#progUpdate').empty().append("Calculation complete!");
+			    	if (progress == 100.0){
+			    		$('#progUpdate').empty().append("Calculation complete!");
+			    	}else{
+			    		$('#progUpdate').empty().append("Ran out of resources!");
+			    	}
 			    	
     				setTimeout(function(){
 	    				// stop playing the music
@@ -1094,18 +1151,26 @@
 		};
 
 		function findResources(){
+			// reset data
+			grid.data().forEach(function(d){d.isTaken = false;})
+			
+			cities.attr("opacity", ".4");
+
 			// resize grid
 			grid.transition()
-	        		.duration(1000)
-	        		.attr("width", gridSize/2)
-	        		.attr("height", gridSize/2);
+        		.duration(1000)
+        		.attr("width", gridSize/2)
+        		.attr("height", gridSize/2);
+
+	       	// reset taken points for every point
+	        settlements.forEach(function(settlement){settlement.takenPoints = [];});
+
+        	// calculate need for each city
+        	calculateSettlementsNeed(settlements);
 			
 			counter = 0;
 
 			$('#progUpdate').empty();
-
-	       	// reset taken points for every point
-	        settlements.forEach(function(settlement){settlement.takenPoints = [];});
 
 			findCells();
 
@@ -1213,7 +1278,7 @@
     	Tetris music track. Credit goes to Hirokazu Tanaka.
 		http://www.vgmpf.com/Wiki/index.php?title=Tetris_(NES)
 	-->
-	<audio id="tetrisTune">
+	<audio loop id="tetrisTune">
 			<source src="http://www.vgmpf.com/Wiki/images/1/1b/02_-_Tetris_-_NES_-_Music_1_-_Fast.ogg">
 	</audio>
 
