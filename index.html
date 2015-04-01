@@ -97,6 +97,12 @@
 		    color: black;
 		}
 
+		.report {
+			font-size: 1em;
+		    font-weight: bold;
+		    margin-top: .75em;
+		}
+
 	</style>
 
 	</head>
@@ -405,7 +411,38 @@
 		            		</div>
 						</div>
 						<div id = "barChartReport" class="col-xs-12" style="font-weight:bold; margin-top:1em"></div>
+						
+						<!--map and report -->
+						<div class="row-fluid">
+							<div id="availableResources" class="col-xs-2 report"></div>
+							<div class="col-xs-10">
+								<div class="row-fluid">
+									<div id="availableWater" class="col-xs-2 report"></div>
+									<div id="availableForest" class="col-xs-2 report"></div>
+									<div id="availableAgriculture" class="col-xs-2 report"></div>
+									<div id="availableDeveloped" class="col-xs-2 report"></div>
+									<div id="availableNatural" class="col-xs-2 report"></div>
+									<div id="availableWetlands" class="col-xs-2 report"></div>
+								</div>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div id="needResources" class="col-xs-2 report"></div>
+							<div class="col-xs-10">
+								<div class="row-fluid">
+									<div id="needWater" class="col-xs-2 report"></div>
+									<div id="needForest" class="col-xs-2 report"></div>
+									<div id="needAgriculture" class="col-xs-2 report"></div>
+									<div id="needDeveloped" class="col-xs-2 report"></div>
+									<div id="needNatural" class="col-xs-2 report"></div>
+									<div id="needWetlands" class="col-xs-2 report"></div>								
+								</div>
+							</div>
+						</div>
 						<div id="grid" class="col-xs-12"></div>
+								
+					</div>
+						</div>
 					</div>
 				</div>
 	        </div>
@@ -560,7 +597,7 @@
 
 		var margin = { top: 40, right: 10, bottom: 0, left: 10 },
 			width = window.innerWidth - 160;
-			mapWidth = 7 * width /12 - margin.left - margin.right,
+			mapWidth = (7 * width /12)- margin.left - margin.right,
 			height = window.innerHeight - 20,
 			barChartHeight = 100,
 			mapHeight = height - margin.top - margin.bottom - barChartHeight,
@@ -584,6 +621,8 @@
 		// place holder for number of cells
 		var landCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 		var tempLandCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+		var needLandCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+
 		
 		var initialSettlements,
 			activeSettlements;
@@ -618,6 +657,8 @@
 						
 						settlement.resourcesNeed[lu.landuse] = numOfCells;
 						
+						needLandCellsCount[lu.landuse] += numOfCells;
+
 						settlement.totalResourcesNeed += numOfCells;					
 					});
 				
@@ -723,7 +764,7 @@
 	        .data(colorscale.domain())
 	      .enter().append("g")
 	        .attr("class", "legend")
-	        .attr("transform", function(d, i) { return "translate(0," + i * legendSize + ")"; });
+	        .attr("transform", function(d, i) { return "translate(0," + (i+1) * legendSize + ")"; });
 				
 		legend.append("rect")
         	.attr("width", 0.8 * legendSize)
@@ -737,6 +778,16 @@
 	        .style("text-anchor", "start")
 	        .text(function(d) { return d; });
 		
+		svg.selectAll(".info")
+			.data(["* Each cell represnts " + cellArea.toFixed(2) + " acres."])
+			.enter()
+			.append("text")
+	        .attr("x", 0)
+	        .attr("y", 0)
+	        .attr("dy", ".35em")
+	        .style("text-anchor", "start")
+	        .text(function(d) { return d; });
+
 		// Added tooltip to make sure x - y values make sense
 		// grid.append("title").text(function(d){return d.x + "|" + d.y;})
 		
@@ -1118,7 +1169,28 @@
 			updateBarChart();
 			}, 1000);
 
+		/*
+		// set up initial values for report
+		d3.select("#availableResources").text("#Cells Available");
 
+		d3.keys(landCellsCount).forEach(function(lu){
+			d3.select("#available" + lu)
+				.style("background", colorscale(lu))
+				.style("font-size", "1.5em")
+				.style("color", "white")
+				.text(landCellsCount[lu]);
+			});
+		
+		d3.select("#needResources").text("#Cells Needed");
+			d3.keys(needLandCellsCount).forEach(function(lu){
+				d3.select("#need" + lu)
+				.style("background", colorscale(lu))
+				.style("font-size", "1.5em")
+				.style("color", "white")
+				.text(landCellsCount[lu]);
+			});
+		*/
+		
 		function getDistance(x0, y0, x1, y1){
 			// this is not the correct distance but since I just use it for comparison
 			// I'm trying to save the extra step of sqrt
