@@ -83,6 +83,20 @@
 		    stroke: #000;
 		    shape-rendering: crispEdges;
 		}
+		a:link {
+		    color: grey;
+		}
+
+		/* visited link */
+		a:visited {
+		    color: grey;
+		}
+
+		/* mouse over link */
+		a:hover {
+		    color: black;
+		}
+
 	</style>
 
 	</head>
@@ -122,18 +136,23 @@
 	    <!-- Page Content -->
 	    <div class="row-fluid">
 		    <div id="title" class="col-xs-10">
-		    		<h1>The New Chautauqua Game: <span style = "font-size:0.5em"> Designing the Renewable City and Region Using e[m]ergy Accounting</span></h1>
+		    <a href="http://www.mebd-penndesign.info/New-Chautauqua-Game" target="_blank" title="Click to read more about the project">
+		    		<h1>The New Chautauqua Game<br><span style = "font-size:0.5em"> Designing the Renewable City and Region Using e[m]ergy Accounting</span></h1>
+		    </a>
 		    </div>
 			<div class="btn-toolbar col-xs-2" role="toolbar">
-		      <div class="btn-group" style="margin-top:2em">
-		        <button type="button" class="btn btn-default" id="soundControl">
-					<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
-				</button>
-				<button type="button" class="btn btn-default" data-toggle="collapse" data-target="#collapseDiv" aria-controls="collapseExample">
-		  			<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-				</button>
-		      </div>
-		    </div>
+				<div class="row-fluid">
+			      <div class="btn-group col-xs-12" style="margin-top:2em">
+			        <button type="button" class="btn btn-default" id="soundControl" title="Turn off the music!">
+						<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
+					</button>
+					<button type="button" class="btn btn-default" data-toggle="collapse" data-target="#collapseDiv" aria-controls="collapseExample" title="Read More!">
+			  			<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+					</button>
+			      </div>
+			      <div class="btn-group col-xs-12" style="font-size:1.1em">Version Beta</div>
+			    </div>
+			</div>
 	    </div>
 	    
 		<div class=" col-xs-12 collapse" id="collapseDiv">
@@ -141,6 +160,7 @@
     			<p>The New Chautauqua Game evaluates the land needed to harvest and concentrate renewable energies to support the population of the county.</p> 
 				<p>To play the game adjust the slider bars below to modify the rates of production and consumption in the county, then click on “Check Land Area” to see if your scenario can support the population on the resources of the county.</p>
 				<p>To see the distribution of land uses within the county, select a population scenario and click “Remap Chautauqua” to see the results.</p>
+				<p>You can read more about the project <a href="http://www.mebd-penndesign.info/New-Chautauqua-Game" target="_blank">here</a>.</p>
   			</div>
 		</div>
 		
@@ -1341,15 +1361,20 @@
 	<audio id="tetrisSuccess">
 		<source src="./music/07_Tetris_NES_Success.ogg">
 	</audio>
-		<!--
-	    <!-- /.footer
+		
+		<!-- footer 
 	    <div class="row-fluid">
 	        <footer>
-	            <div class="footer navbar-fixed-bottom col-xs-12">
+	            <div class="footer navbar-fixed-bottom col-xs-12" style="background:white">
 	            <hr>
 	                <p>
 	                    March 2015 |
-	                    <a href="https://github.com/mostaphaRoudsari/SettlementEmerge" target="_blank"> About</a>
+	                    <a href="https://github.com/mostaphaRoudsari/SettlementEmerge/issues" target="_blank"> Give us feedback </a>
+	                    |
+	                    <a href="https://github.com/mostaphaRoudsari/SettlementEmerge" target="_blank"> Fork the project on Github</a>
+	                    |
+	                    <a href="http://www.mebd-penndesign.info/New-Chautauqua-Game" target="_blank"> Read more about the project</a>
+
 	                </p>
 	            </div>
 	        </footer>
