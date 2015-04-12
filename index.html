@@ -198,8 +198,8 @@
 	    	<!-- sliders and eventually graphs -->   	
 	        <div id="sliders" class="col-xs-3 panel-group" id="accordion">
 
-				<div class="panel panel-info clickable" data-toggle="collapse" data-parent="#accordion" href="#Introduction-wrapper">
-		          	<div class="panel-heading">
+				<div class="panel panel-info">
+		          	<div class="panel-heading clickable" data-toggle="collapse" data-parent="#accordion" href="#Introduction-wrapper">
 		            	<h4 class="panel-title">Introduction</h4>
 		          	</div>
 		          	<div id="Introduction-wrapper" class="panel-collapse collapse in">
@@ -214,7 +214,7 @@
 
 				<div class="panel panel-warning">
 		          <div class="panel-heading clickable" data-toggle="collapse" data-parent="#accordion" href="#Construction-wrapper">
-		            <h4 class="panel-title">Construction</h4>
+		            <h4 class="panel-title">Built Environment</h4>
 		          </div>
 		          <div id="Construction-wrapper" class="panel-collapse collapse">
 		            <div class="panel-body">
@@ -347,43 +347,48 @@
 		          </div>
 		          <div id="Transportation-wrapper" class="panel-collapse collapse">
 		            <div class="panel-body">
-						<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
-							Vehicle miles Driven - Per Capita
+						<div class="row">
+							<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
+								Vehicle Miles Driven - Per Capita
+							</div>
+				            <div class="col-xs-8">
+				                	<input type="text" name="nMileDriven" id="nMileDriven" value="100">
+				        	</div>
 						</div>
-			            <div class="col-xs-8">
-			                	<input type="text" name="nMileDriven" id="nMileDriven" value="100">
+						<div class="row">
+							<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
+								Vehicle Efficiency - MPG
+							</div>
+							<div class="col-xs-8">
+								<input type="text" name="nVehicleEff" id="nVehicleEff" value="100">
+		        			</div>
+		        		</div>
+						<div class="row">
+							<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
+								Biofuel Production Efficiency
+							</div>
+							<div class="col-xs-8">
+								<input type="text" name="nBioFuelEff" id="nBioFuelEff" value="100">
+							</div>
+						</div>
+						<div class="row">
+			        		<div class="col-xs-12" style="font-weight:bold; padding-bottom:2px; padding-top:5px">
+				        		Vehicle Fuel Mix
+							</div>
+
+			        		<div class="col-xs-4">
+								<input type="text" name="nTMBiofuels" id="nTMBiofuels" value="11">
+			        			Biofuels
+			        		</div>
+							<div class="col-xs-4">
+								<input type="text" name="nTMElectricity" id="nTMElectricity" value="0">
+			        			Electricty
+			        		</div>
+			        		<div class="col-xs-4">
+								<input type="text" name="nTMFossilfuels" id="nTMFossilfuels" value="89">
+			        			Fossil Fuel
+			        		</div>
 			        	</div>
-						
-						<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
-							Vehicle Efficiency - MPG
-						</div>
-						<div class="col-xs-8">
-							<input type="text" name="nVehicleEff" id="nVehicleEff" value="100">
-	        			</div>
-
-						<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
-							Biofuel Production Efficiency
-						</div>
-						<div class="col-xs-8">
-							<input type="text" name="nBioFuelEff" id="nBioFuelEff" value="100">
-						</div>
-
-		        		<div class="col-xs-12" style="font-weight:bold; padding-bottom:2px; padding-top:5px">
-			        		Vehicle Fuel Mix
-						</div>
-
-		        		<div class="col-xs-4">
-							<input type="text" name="nTMBiofuels" id="nTMBiofuels" value="11">
-		        			Biofuels
-		        		</div>
-						<div class="col-xs-4">
-							<input type="text" name="nTMElectricity" id="nTMElectricity" value="0">
-		        			Electricty
-		        		</div>
-		        		<div class="col-xs-4">
-							<input type="text" name="nTMFossilfuels" id="nTMFossilfuels" value="89">
-		        			Fossil Fuel
-		        		</div>
 		            </div>
 		          </div>	          
 		        </div>
@@ -425,10 +430,23 @@
 				<div class="row-fluid">
 					<div class="col-xs-4">
 						<div class="row-fluid panel panel-info" title="Load different population scenarios. You can change population of each city by righ clicking on the circle and input a number. Use show populations button to see the population for each city.">
+							
 							<div class="panel-heading">
 	                			<h4 class="panel-title"> 1. Population Scenario </h4>
 	                		</div>
+							
 							<div class = "panel-body">
+								<div class="row-fluid">
+									<table class="table" class="col-xs-12">
+							           	<tbody>
+										    <tr>
+										        <td>Total Population</td>
+										        <td><span id = "totalPopulation"></span></td>
+										    </tr>
+		                				</tbody>
+			                		</table>
+			                	</div>
+
 								<div class="col-xs-10">
 
 			                		<select class = "btn btn-success" style="width:100%" name="populationScenarios">
@@ -443,25 +461,38 @@
 										<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 									</button>
 			    				</div>
+		                	</div>
 
-		                		<div id="totalPopulation" class="col-xs-12"><h3>Total Population: <span></span></h3></div>
-			            		</div>
-			            	</div>
-
+			            </div>
+						
 						<div class="row-fluid panel panel-info">
 							<div class="panel-heading">
 	                			<h4 class="panel-title"> 2. Land Area </h4>
 	                		</div>
 
 	                		<div class = "panel-body">
-								<div id = "buttons" class="col-xs-12">
+					            <div class="row-fluid">
+						           	<table class="table" id = "landAreaComparison" class="col-xs-12">
+							           	<tbody>
+										    <tr>
+										        <td>County Land Area</td>
+										        <td><span id = "countyLandArea"></span></td>
+										    </tr>
+										    <tr>
+										        <td>Support Land Area</td>
+										        <td><span id = "supportLandArea"></span></td>
+										    </tr>
+										    <tr>
+										        <td>Primary Land Area</td>
+										        <td><span id = "primaryLandArea"></span></td>
+										    </tr>
+							           	</tbody>
+						           	</table>
+						        </div>
+
+						        <div id = "buttons" class="col-xs-12">
 			                		<input class = "btn btn-success" type="submit" style="width:100%;" value="Check Land Area"/><br><span id="result"> You need to calculate land area before remapping the landuse.</span>
 					            </div>
-					           	<div id = "lansAreaComparison" class="col-xs-12">
-				            		<h4>County Land Area: <span id = "countyLandArea"></span></h4>
-				            		<h4>Support Land Area: <span id = "supportLandArea"></span></h4>
-				            		<h4>Primary Land Area: <span id = "primaryLandArea"></span> </h4>
-					           	</div>
 					           	<!--
 					           	<div id = "barChartComparison" class="col-xs-12">
 					            		<h4><span></span></h4>
@@ -559,17 +590,17 @@
 
 	    	function($){
 	        $("#nEnergyDemand").ionRangeSlider({
-	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: true, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 
 	        $("#nPVEff").ionRangeSlider({
-	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: true, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 	        $("#nBioMassEff").ionRangeSlider({
-	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: true, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 	        $("#nWindEff").ionRangeSlider({
-	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: true, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 
 	        $("#nEDPV").ionRangeSlider({
@@ -590,10 +621,10 @@
 	        });
 
 	        $("#nFoodDemand").ionRangeSlider({
-	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: true, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 	        $("#nFoodEff").ionRangeSlider({
-	            hide_min_max: true, min: 100, max: 200, from: 100, step: 10, postfix:"%", grid: true, prettify_separator: ","
+	            hide_min_max: true, min: 100, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 
 	        $("#nFDGrains").ionRangeSlider({
@@ -616,13 +647,13 @@
 	        });
 
     		$("#nMileDriven").ionRangeSlider({
-	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: true, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
         	$("#nVehicleEff").ionRangeSlider({
-	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: true, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 			$("#nBioFuelEff").ionRangeSlider({
-	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: true, prettify_separator: ","
+	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	        });
 			$("#nTMBiofuels").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ",",
@@ -695,7 +726,7 @@
 			width = window.innerWidth - 160;
 			mapWidth = (7 * width /12)- margin.left - margin.right,
 			height = window.innerHeight - 20,
-			barChartHeight = 60,
+			barChartHeight = 100,
 			mapHeight = height - margin.top - margin.bottom - barChartHeight,
 			colors = ["#00A3DB", "#3ECA66", "#F5EA0B", "#E6385C", "#9BD956", "#137484"],
 			landuse = ["Water", "Forest", "Agriculture", "Developed", "Natural", "Wetlands"],
@@ -807,9 +838,8 @@
 		popScale.domain(d3.extent(settlements, function(d){return d.population;}));
 
 		d3.select("#totalPopulation")
-			.select("span")
 			.text(totalPopulation)
-			.style("font-size", "1em")
+			.style("font-size", "1.2em")
 		    .style("color", "grey")
 		    .style("font-weight", "bold");
 
@@ -922,7 +952,7 @@
 
 			var percentageChange = (100 * (totalPopulation-originalPopulation)/originalPopulation).toFixed(2);
 			// update total population text
-			d3.select("#totalPopulation").select('span').text(totalPopulation + "(" + percentageChange +"%)");
+			d3.select("#totalPopulation").text(totalPopulation + "(" + percentageChange +"%)");
 
 			// update population text
 			d3.selectAll("text.populationText")
@@ -1059,7 +1089,7 @@
 		
 		// draw bar charts
 		// landAreaAvailable vs (totalLandNeedPerPerson * totalPopulation)
-		var barChartMargin = {top:20, right:25, bottom:0, left:75};
+		var barChartMargin = {top:40, right:40, bottom:0, left:60};
 		var bWidth = d3.select("#barChart").style("width").replace("px","");
 		var bHeight = barChartHeight;
 
@@ -1168,6 +1198,7 @@
 			var x0 = 0;
 			totalLandNeedPerPerson.forEach(function(d){
 	      		barChart.data()[1].total += +(d.total* totalPopulation);
+	      		//barChart.data()[1].total += +(d.primary * totalPopulation);
 	      		barChart.data()[1].values.push({enabled: true, landuse: d.landuse, x0: x0, x1: x0 += +(d.total* totalPopulation)});
 	      	});
 
