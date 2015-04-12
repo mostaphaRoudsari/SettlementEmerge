@@ -458,9 +458,9 @@
 			                		<input class = "btn btn-success" type="submit" style="width:100%;" value="Check Land Area"/><br><span id="result"> You need to calculate land area before remapping the landuse.</span>
 					            </div>
 					           	<div id = "lansAreaComparison" class="col-xs-12">
-				            		<h4>County Land Area: </h4>
-				            		<h4>Support Land Area: </h4>
-				            		<h4>Primary Land Area: </h4>
+				            		<h4>County Land Area: <span id = "countyLandArea"></span></h4>
+				            		<h4>Support Land Area: <span id = "supportLandArea"></span></h4>
+				            		<h4>Primary Land Area: <span id = "primaryLandArea"></span> </h4>
 					           	</div>
 					           	<!--
 					           	<div id = "barChartComparison" class="col-xs-12">
@@ -703,6 +703,9 @@
 			showCityNames = false,
 			originalPopulation = 0,
 			totalPopulation = 0;
+		
+		var	supportLandArea = 0,
+			primaryLandArea = 0;
 
 		// this is the base case place holder
 		var totalLandNeedPerPerson = [
@@ -749,6 +752,10 @@
 
 					// for each land use
 					totalLandNeedPerPerson.forEach(function(lu){
+						// add up land need
+						primaryLandArea += settlement.population * lu.primary;
+						supportLandArea += settlement.population * lu.support;
+
 						// number of cells = (population  * needareaPerPerson) /cell Area
 						var numOfCells = parseInt((settlement.population * lu.primary)/ cellArea);
 						
@@ -812,7 +819,7 @@
 		cells = data.cells;
 		numOfTotalAvailableCells = cells.length;
 		// total area in acres is 960115
-		var totalArea = 960115;
+		totalArea = 960115;
 		cellArea = totalArea / numOfTotalAvailableCells;
 
 		popScale.range([Math.min(8, 2*gridSize), Math.min(4, gridSize)]);
@@ -1211,6 +1218,25 @@
 			    	return "green"
 			    }
 				});
+
+			// update land area report
+			d3.select("#countyLandArea")
+				.text(totalArea + " acres")
+				.style("font-size", "1.2em")
+			    .style("color", "grey")
+			    .style("font-weight", "bold");
+
+			d3.select("#supportLandArea")
+				.text(parseInt(supportLandArea) + " acres")
+				.style("font-size", "1.2em")
+			    .style("color", "grey")
+			    .style("font-weight", "bold");
+			
+			d3.select("#primaryLandArea")
+				.text(parseInt(primaryLandArea) + " acres")
+				.style("font-size", "1.2em")
+			    .style("color", "grey")
+			    .style("font-weight", "bold");			    
 		};
 
 		var populationSc = [{Panama:4572, "Cherry Creek":5211, Ripley:2452, Brocton:5579,
@@ -1268,8 +1294,6 @@
 
 			// update bar chart
 			updateBarChart();
-
-			console.log(diff);
 			
 			}, 100);
 
