@@ -240,14 +240,12 @@
 		          </div>
 		          <div id="Energy-wrapper" class="panel-collapse collapse">
 			            <div class="panel-body">
-				            <div class="col-xs-4" style="font-weight:bold; padding-top:20px">
-							Energy Demand
-							</div>
 
-				            <div class="col-xs-8">
-				                	<input type="text" name="nEnergyDemand" id="nEnergyDemand" value="100">
+				            <div class="col-xs-12">
+				                <input type="text" name="nEnergyDemand" id="nEnergyDemand" value="100">
+								Energy Demand
 				        	</div>
-
+				        	
 				        	<div class="col-xs-12" style="font-weight:bold; padding-bottom:2px; padding-top:5px">
 							Energy Production Efficiency
 							</div>
@@ -295,18 +293,14 @@
 		          </div>
 		          <div id="Food-wrapper" class="panel-collapse collapse">
 		            <div class="panel-body">
-						<div class="col-xs-4" style="font-weight:bold; padding-top:20px">
-						Food Demand
-						</div>
-			            <div class="col-xs-8">
-			                	<input type="text" name="nFoodDemand" id="nFoodDemand" value="100">
+			            <div class="col-xs-12">
+			                <input type="text" name="nFoodDemand" id="nFoodDemand" value="100">
+							Food
 			        	</div>
 						
-						<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
-						Food Production Eff. Imporvement
-						</div>
-			            <div class="col-xs-8">
-			                	<input type="text" name="nFoodEff" id="nFoodEff" value="100">
+			            <div class="col-xs-12">
+			                <input type="text" name="nFoodEff" id="nFoodEff" value="100">
+							Food Production Eff. Imporvement
 			        	</div>
 						
 						<div class="col-xs-12" style="font-weight:bold; padding-bottom:2px; padding-top:5px">
@@ -347,31 +341,21 @@
 		          </div>
 		          <div id="Transportation-wrapper" class="panel-collapse collapse">
 		            <div class="panel-body">
-						<div class="row">
-							<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
+						<div class="row-fluid">
+				            <div class="col-xs-12">
+				                <input type="text" name="nMileDriven" id="nMileDriven" value="100">
 								Vehicle Miles Driven - Per Capita
-							</div>
-				            <div class="col-xs-8">
-				                	<input type="text" name="nMileDriven" id="nMileDriven" value="100">
 				        	</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
-								Vehicle Efficiency - MPG
-							</div>
-							<div class="col-xs-8">
+							<div class="col-xs-12">
 								<input type="text" name="nVehicleEff" id="nVehicleEff" value="100">
+								Vehicle Efficiency - MPG
 		        			</div>
-		        		</div>
-						<div class="row">
-							<div class="col-xs-4" style="font-weight:bold; padding-top:10px">
+							<div class="col-xs-12">
+								<input type="text" name="nBioFuelEff" id="nBioFuelEff" value="100">
 								Biofuel Production Efficiency
 							</div>
-							<div class="col-xs-8">
-								<input type="text" name="nBioFuelEff" id="nBioFuelEff" value="100">
-							</div>
 						</div>
-						<div class="row">
+						<div class="row-fluid">
 			        		<div class="col-xs-12" style="font-weight:bold; padding-bottom:2px; padding-top:5px">
 				        		Vehicle Fuel Mix
 							</div>
@@ -491,7 +475,7 @@
 						        </div>
 
 						        <div id = "buttons" class="col-xs-12">
-			                		<input class = "btn btn-success" type="submit" style="width:100%;" value="Check Land Area"/><br><span id="result"> You need to calculate land area before remapping the landuse.</span>
+			                		<input class = "btn btn-success" id="checkArea" type="submit" style="width:100%;" value="Check Land Area"/><br><span id="result"> You need to calculate land area before remapping the landuse.</span>
 					            </div>
 					           	<!--
 					           	<div id = "barChartComparison" class="col-xs-12">
@@ -511,7 +495,7 @@
 	                		</div>
 	                		<div class = "panel-body">
 		                		<div class="col-xs-12">
-				                	<button class = "btn btn-success" style="width:100%" id="play" type="button">Remap Chautauqua!</button>
+				                	<button class = "btn btn-success" style="width:100%" id="play" type="button" title = 'Click to remap Chautauqua!' >Remap Chautauqua!</button>
 					            </div>
 					            <br>
 					            <div class="row-fluid">
@@ -585,137 +569,193 @@
 			alert("Seriously!? There is no such an option currently available. This game comes with music. Sorry!")
 			});
 
+		var currentSliderValues = {
+			"nEDPV": 1,
+			"nEDBioMass": 15,
+			"nEDWind": 0,
+			"nEDFuel": 84,
+			"nFDGrains": 45,
+			"nFDVegetables": 15,
+			"nFDFruit": 10,
+			"nFDDairy": 5,
+			"nFDMeat": 20,
+			"nFDFish": 5,
+			"nTMBiofuels": 11,
+			"nTMElectricity": 0,
+			"nTMFossilfuels": 89
+		}
+
 		// set up sliders
 	    jQuery( document ).ready(
 
 	    	function($){
 	        $("#nEnergyDemand").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 
 	        $("#nPVEff").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	        $("#nBioMassEff").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	        $("#nWindEff").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 
 	        $("#nEDPV").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ",", keyboard: true
-	            , keyboard_step: 1
+	            , keyboard_step: 1, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	        $("#nEDBioMass").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ",", keyboard: true
-	            , keyboard_step: 1
+	            , keyboard_step: 1, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	       	$("#nEDWind").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ",", keyboard: true
-	            , keyboard_step: 1
+	            , keyboard_step: 1, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	        $("#nEDFuel").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ",", keyboard: true
-	            , keyboard_step: 1
+	            , keyboard_step: 1, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 
 	        $("#nFoodDemand").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	        $("#nFoodEff").ionRangeSlider({
 	            hide_min_max: true, min: 100, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 
 	        $("#nFDGrains").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 5, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	        $("#nFDVegetables").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 5, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	       	$("#nFDFruit").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 5, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	        $("#nFDDairy").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 5, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	       	$("#nFDMeat").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 5, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	        $("#nFDFish").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 5, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 
     		$("#nMileDriven").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
         	$("#nVehicleEff").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 			$("#nBioFuelEff").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, from: 100, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 			$("#nTMBiofuels").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ",",
-	            keyboard: true, keyboard_step: 1
+	            keyboard: true, keyboard_step: 1, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 			$("#nTMElectricity").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ",",
-	            keyboard: true, keyboard_step: 1, disable: true
+	            keyboard: true, keyboard_step: 1, disable: true, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 			$("#nTMFossilfuels").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ",",
-	            keyboard: true, keyboard_step: 1
+	            keyboard: true, keyboard_step: 1, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 
 	        $("#nDensity").ionRangeSlider({
 	            hide_min_max: true, min: 10, max: 1000, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	        $("#nBldgSizeEff").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ",",
-	            disable: true
+	            disable: true, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });	        
 	        $("#nBldgDepr").ionRangeSlider({
 	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ",",
-	            disable: true
+	            disable: true, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	       	
 	       	$("#nGoodPurchased").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	        
 	        $("#nWasteProduced").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });	        
 	       	
 	       	$("#nWasteRecycling").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ","
-	            , keyboard: true, keyboard_step: 1
+	            , keyboard: true, keyboard_step: 1, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	       	
 	       	$("#nWaterUsage").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ","
+	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 
 	    });
+		
+		var energyMixSliders = ["nEDPV","nEDBioMass", "nEDWind", "nEDFuel"];
+		var foodMixSliders = ["nFDGrains", "nFDVegetables", "nFDFruit", "nFDDairy", "nFDMeat", "nFDFish"];
+		var vehicleMixSliders = ["nTMBiofuels", "nTMElectricity", "nTMFossilfuels"];
 
 
-		// sliders
-		d3.select("#nEnergyDemand").on("input", function(){energyDemand = +this.value;});
-		d3.select("#nEDFuel").on("input", function(){EDFuel = +this.value;}); // result of other sliders
-		d3.select("#nEDPV").on("input", function(){EDPV = +this.value;});
-		d3.select("#nEDBioMass").on("input", function(){EDBioMass = +this.value;});
-		d3.select("#nEDWind").on("input", function(){EDWind = +this.value;});
-		d3.select("#nFoodDemand").on("input", function(){FoodDemand = +this.value;});
-		d3.select("#nFDGrains").on("input", function(){FDGrains = +this.value;}); // result of other sliders
-		d3.select("#nFDVegetables").on("input", function(){FDVegetables = +this.value;});
-		d3.select("#nFDFruit").on("input", function(){FDFruit = +this.value;});
-		d3.select("#nFDDairy").on("input", function(){FDDairy = +this.value;});
-		d3.select("#nFDMeat").on("input", function(){FDMeat = +this.value;});
-		d3.select("#nFDFish").on("input", function(){FDFish = +this.value;});
-		d3.select("#nMileDriven").on("input", function(){MileDriven = +this.value;});
-		d3.select("#nVehicleEff").on("input", function(){VehicleEff = +this.value;});
-		d3.select("#nGasolineMix").on("input", function(){GasolineMix = +this.value;});
+		// map sliders for changes
+		function updateSlidersValue(changedSliderName, newValue){
+            
+            // update the value of sliders and change color of recalculate and remap buttons
+            if (!isNaN(newValue)) currentSliderValues[changedSliderName] = newValue;
+			
+			d3.select("#checkArea").attr("class", "btn btn-danger");
+			d3.select("#play").attr('disabled', true)
+
+			if (vehicleMixSliders.indexOf(changedSliderName)!=-1){
+				// update slider values for vehicle mix
+				// for now electricity is disabled
+				if (changedSliderName=="nTMFossilfuels"){
+					currentSliderValues["nTMBiofuels"] = 100 - newValue;
+					updateSliderValue("nTMBiofuels", 100 - newValue);
+				}else{
+					currentSliderValues["nTMFossilfuels"] = 100 - newValue;
+					updateSliderValue("nTMFossilfuels", 100 - newValue);
+				}
+			} else if (energyMixSliders.indexOf(changedSliderName)!=-1){
+				// I still need to write mapping functionalities
+				
+			} else if (foodMixSliders.indexOf(changedSliderName)!=-1){
+				// I still need to write mapping functionalities
+			}
+		}
+
+		function updateSliderValue(sliderName, sliderValue){
+			
+			$("#" + sliderName).data("ionRangeSlider")
+				.update({ from: sliderValue});
+		}
 
 	</script>
 
@@ -1563,6 +1603,9 @@
 					.style("color", "white")
 					.text(needLandCellsCount[lu]);
 				});
+
+				d3.select("#checkArea").attr("class", "btn btn-success");
+
 			});
 		
 			// callback handler that will be called on failure
