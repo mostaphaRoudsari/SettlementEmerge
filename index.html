@@ -690,11 +690,11 @@
 	        });
 	        $("#nBldgSizeEff").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ",",
-	            disable: true, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
+	            onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });	        
 	        $("#nBldgDepr").ionRangeSlider({
 	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ",",
-	            disable: true, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
+	            onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 	       	
 	       	$("#nGoodPurchased").ionRangeSlider({
