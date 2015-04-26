@@ -28,6 +28,11 @@
     	<link href="base_bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
 	<style>
+
+		html {
+  			font-size: 100%;
+  		}
+
 		body {
 		   font-family: sans-serif;
 		   font-size: 12px;
@@ -815,6 +820,9 @@
                 			});
 
 				activeSettlements = initialSettlements.filter(function(d){return d.population!=0});
+
+				primaryLandArea = 0;
+				supportLandArea = 0;
 
 				activeSettlements.forEach(function(settlement){
 					
