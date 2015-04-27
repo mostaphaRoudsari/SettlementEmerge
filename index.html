@@ -229,11 +229,11 @@
 						</div>
 						<div class="col-xs-12">
 							<input type="text" id="nBldgSizeEff" name="nBldgSizeEff" value="100">
-							Building Size - Efficiency
+							Building Construction Efficiency
 						</div>
 						<div class="col-xs-12">
 							<input type="text" id="nBldgDepr" name="nBldgDepr" value="50">
-							Deprecation of Buildings (Years)
+							Deprecation of Construction (Years)
 						</div>
 		            </div>
 		          </div>	          
@@ -1363,7 +1363,7 @@
 			$("#inputSliders").submit();
 
 			// add a line to explicitly let the user now what is happening with the scenario.
-			var reportText = "We need " + diff + " Chautauqua Countys to support the current life style of the population."
+			var reportText = ""; //"We need " + diff + " Chautauqua Countys to support the current life style of the population."
 			
 			if (diff>1){
 				reportText+=" We need your help in identifying a better solution that only uses the resources of the county."
