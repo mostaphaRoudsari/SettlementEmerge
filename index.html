@@ -66,11 +66,10 @@
 		}
 		
 		.hull {
-		  fill: white;
+		  fill: none;
 		  stroke: black;
 		  stroke-width: 3px;
 		  stroke-linejoin: round;
-		  opacity: .4;
 		}
 
 		hr {
@@ -775,6 +774,7 @@
 			mapHeight = height - margin.top - margin.bottom - barChartHeight,
 			colors = ["grey", "#00A3DB", "#3ECA66", "#F5EA0B", "#E6385C", "#9BD956", "#137484"],
 			landuse = ["Support", "Water", "Forest", "Agriculture", "Developed", "Natural", "Wetlands"],
+			landuses = ["Water", "Forest", "Agriculture", "Developed", "Natural", "Wetlands"], // This is bad practice but I use it for now as I added Support to original land use array which is messing up everything
 			cityname = "", // a public value to be used to change population of cities on click
 			showCityNames = false,
 			originalPopulation = 0,
@@ -796,8 +796,7 @@
 		
 		// place holder for number of cells
 		var landCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
-		var tempLandCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
-		var needLandCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+		var originalLandCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 
 		
 		var initialSettlements,
@@ -806,6 +805,8 @@
 		// calculate number of cells needed for each city for each landuse
 		
 		calculateSettlementsNeed = function calculateSettlementsNeed(){
+				
+				needLandCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 				
 				// reset taken points for every point
 	        	initialSettlements.forEach(function(settlement){
@@ -824,6 +825,7 @@
 
 				primaryLandArea = 0;
 				supportLandArea = 0;
+				numOfTotalNeededCells = 0;
 
 				activeSettlements.forEach(function(settlement){
 					
@@ -841,9 +843,13 @@
 						
 						settlement.resourcesNeed[lu.landuse] = numOfCells;
 						
-						needLandCellsCount[lu.landuse] = numOfCells;
+						needLandCellsCount[lu.landuse] += numOfCells;
 
-						settlement.totalResourcesNeed += numOfCells;					
+						// make sure Support land area doesn't get into calculation here
+						if (landuses.indexOf(lu.landuse)!=-1){
+							settlement.totalResourcesNeed += numOfCells;
+							numOfTotalNeededCells += numOfCells;
+						}
 						
 						// update text
 						d3.select("#need" + lu.landuse).transition().duration(500).text(needLandCellsCount[lu.landuse]);
@@ -853,8 +859,8 @@
 					
 				});
 				
-				d3.keys(tempLandCellsCount).forEach(function(lu){
-					tempLandCellsCount.lu = landCellsCount.lu;
+				d3.keys(originalLandCellsCount).forEach(function(lu){
+					landCellsCount[lu] = originalLandCellsCount[lu];
 				})
 		}
 
@@ -933,8 +939,13 @@
 				.attr("class", "cells")
 				.attr("id", function(d){ return "id_" + d.id;})
 				.style("fill",  function(d){
-					landCellsCount[d.landuse] += 1;
+					originalLandCellsCount[d.landuse] += 1;
 					return colorscale(d.landuse);
+				})
+
+		// make a copy of number of cells
+		d3.keys(originalLandCellsCount).forEach(function(lu){
+					landCellsCount[lu] = originalLandCellsCount[lu];
 				})
 
 		// area available for each use
@@ -1401,27 +1412,34 @@
 		}
 
 		rounds = d3.range(settlements.length);
-		totalCases = rounds.length * settlements.length * landuse.length;
+		totalCases = rounds.length * settlements.length * landuses.length;
 
 		function findCells() {
-				var roundIndex = parseInt(counter/(activeSettlements.length * landuse.length))
-				var cityIndex = parseInt((counter/landuse.length)%activeSettlements.length);
-				var landuseIndex = parseInt(counter%landuse.length);
+				var roundIndex = parseInt(counter/(activeSettlements.length * landuses.length))
+				var cityIndex = parseInt((counter/landuses.length)%activeSettlements.length);
+				var landuseIndex = parseInt(counter%landuses.length);
 
 				var settlement = activeSettlements[cityIndex];
-				var lu = landuse[landuseIndex];
+				var lu = landuses[landuseIndex];
 				var round = rounds[roundIndex];
 
 				// do stuff
-				var ids = settlement.sortedResourcesIds[landuse[landuseIndex]][round]; //find ids of resources based on rank
+				var ids = settlement.sortedResourcesIds[landuses[landuseIndex]][round]; //find ids of resources based on rank
 
 				// check if resources are needed and if there is still anything left
 				if (settlement.totalResourcesNeed == 0) settlement.isSatisfied;
 
-				if (settlement.isSatisfied || tempLandCellsCount.lu ==0 || settlement.resourcesNeed.lu == 0) ids = null;
+				if (settlement.isSatisfied || landCellsCount[lu] ==0 || settlement.resourcesNeed[lu] == 0) ids = null;
 
 				if(ids!=null){
-    				ids.forEach(function(id, i){
+    				
+    				for (var i = 0; i < ids.length; i++) {
+    				
+    					var id = ids[i];
+
+    					// break the loop if resources is not available or 
+    					if (needLandCellsCount[lu]==0 || settlement.resourcesNeed[lu] == 0 ||  landCellsCount[lu] ==0 ) break;
+
     					d3.select("#id_" + id)
     						.filter(function(d){return !d.isTaken})
     						.transition()
@@ -1433,13 +1451,19 @@
     							
 								// update available resources
 								numOfTotalAvailableCells--;
-								tempLandCellsCount.lu--;
+								numOfTotalNeededCells--;
 
 								// update need
 								settlement.totalResourcesNeed--;
-								settlement.resourcesNeed.lu--;
+								settlement.resourcesNeed[lu]--;
+								
+								// update availability text
+								needLandCellsCount[lu]--;
+								landCellsCount[lu]--;
 
 								var delay = (i + 2) * 20;
+
+								// console.log("totalResourcesNeed", settlement.name , " > " , settlement.totalResourcesNeed);
 
 								// update text
 								d3.select("#available" + lu).transition().delay(delay).text(landCellsCount[lu]);
@@ -1448,14 +1472,17 @@
 								
 								// manage delay in a way that it takes the same for all of cities?
 								return delay;})
+    						
     						.duration(50)
     						.attr("width", gridSize)
     						.attr("height", gridSize);
     						//.attr("fill", "black");    					
-    				});
+    				}
+
     			}
 				
 				counter++;    
+				
 				var progress = 	((counter/totalCases)* 100).toFixed(1);
 
 				$('#progUpdate').empty().append("(" + progress + "%) Round " + round + "> " + lu + " for " + settlement.name);
@@ -1463,13 +1490,13 @@
 		    	$('#progBar').val((counter/totalCases) * 100);
 
     			
-			    if (counter < totalCases && numOfTotalAvailableCells>0) {
+			    if (counter < totalCases && numOfTotalAvailableCells>0 && numOfTotalNeededCells!=0) {
 
-			        setTimeout(findCells, 0);
+			        setTimeout(findCells, 0); // call the cells for the next round - number of rounds is equal to number of settelments-1
 
 			    } else{
-			    	if (progress == 100.0){
-			    		$('#progUpdate').empty().append("Calculation complete!");
+			    	if (numOfTotalNeededCells == 0){
+			    		$('#progUpdate').empty().append("Calculation complete! You won!");
 			    	}else{
 			    		$('#progUpdate').empty().append("Ran out of resources!");
 			    	}
@@ -1516,7 +1543,7 @@
 			findCells();
 
 			// start playing the music
-			$('audio#tetrisTune')[0].play();
+			$('audio#tetrisTune')[0].play(); // commented out during debugging!
 	    }
 
 		// run the scenario
@@ -1525,7 +1552,7 @@
 	        	
 	        	// if (!checkScenario())return;
 				
-				// I'm calling find resources inside resize grid to make sure
+				// I'm calling find resources inside resize grid to make sure about the sequence of execution
 				// http://stackoverflow.com/questions/1859185/how-to-force-sequential-javascript-execution
 				findResources();
 
@@ -1611,7 +1638,7 @@
 					.style("background", colorscale(lu))
 					.style("font-size", "1.2em")
 					.style("color", "white")
-					.text(landCellsCount[lu]);
+					.text(originalLandCellsCount[lu]);
 				});
 				
 				d3.select("#needResources").text("#Cells Needed");
