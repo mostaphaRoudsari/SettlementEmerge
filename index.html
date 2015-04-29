@@ -773,8 +773,8 @@
 			height = window.innerHeight - 20,
 			barChartHeight = 100,
 			mapHeight = height - margin.top - margin.bottom - barChartHeight,
-			colors = ["#00A3DB", "#3ECA66", "#F5EA0B", "#E6385C", "#9BD956", "#137484"],
-			landuse = ["Water", "Forest", "Agriculture", "Developed", "Natural", "Wetlands"],
+			colors = ["grey", "#00A3DB", "#3ECA66", "#F5EA0B", "#E6385C", "#9BD956", "#137484"],
+			landuse = ["Support", "Water", "Forest", "Agriculture", "Developed", "Natural", "Wetlands"],
 			cityname = "", // a public value to be used to change population of cities on click
 			showCityNames = false,
 			originalPopulation = 0,
@@ -785,6 +785,7 @@
 
 		// this is the base case place holder
 		var totalLandNeedPerPerson = [
+						{landuse: "Support", primary: 0, support: 0, total: 0} ,
 						{landuse: "Water", primary: 0, support: 0, total: 0} ,
 						{landuse: "Forest", primary: 0, support: 0, total: 0},
 						{landuse: "Agriculture", primary: 0, support: 0, total: 0},
@@ -794,9 +795,9 @@
 
 		
 		// place holder for number of cells
-		var landCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
-		var tempLandCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
-		var needLandCellsCount = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+		var landCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+		var tempLandCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
+		var needLandCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 
 		
 		var initialSettlements,
@@ -947,7 +948,7 @@
 		var legendSize = 3 * gridSize;
 
 	    var legend = svg.selectAll(".legend")
-	        .data(colorscale.domain())
+	        .data(colorscale.domain().slice(1,7)) // remove support from legend
 	      .enter().append("g")
 	        .attr("class", "legend")
 	        .attr("transform", function(d, i) { return "translate(0," + (i+1) * legendSize + ")"; });
@@ -1245,9 +1246,9 @@
 			// set the values based on new land area needed
 			var x0 = 0;
 			totalLandNeedPerPerson.forEach(function(d){
-	      		barChart.data()[1].total += +(d.total* totalPopulation);
+	      		barChart.data()[1].total += +(d.primary* totalPopulation);
 	      		//barChart.data()[1].total += +(d.primary * totalPopulation);
-	      		barChart.data()[1].values.push({enabled: true, landuse: d.landuse, x0: x0, x1: x0 += +(d.total* totalPopulation)});
+	      		barChart.data()[1].values.push({enabled: true, landuse: d.landuse, x0: x0, x1: x0 += +(d.primary* totalPopulation)});
 	      	});
 
 			x.domain([0, d3.max(barChart.data(), function(d) { return d.total;})]);
@@ -1584,8 +1585,18 @@
 				// log a message to the console
 				$('#result').text(" ");
 				
+				var totalSupport = 0; //calculate total support needed per person
+
 				// map land need 
-				totalLandNeedPerPerson = response.newValues.map(function(d){return {landuse:d[0], primary:d[1], support:d[2], total:d[1]+d[2]}});
+				totalLandNeedPerPerson = response.newValues.map(function(d){
+					totalSupport += d[2];
+					return {landuse:d[0], primary:d[1], support:d[2], total:d[1]+d[2]}
+				});
+
+				// add support as the first object
+				var supportNeed = [{landuse:"Support", primary:totalSupport, support:0, total:totalSupport}];
+
+				totalLandNeedPerPerson = supportNeed.concat(totalLandNeedPerPerson); 
 
 				calculateSettlementsNeed();
 				
