@@ -227,7 +227,7 @@
 		          </div>
 		          <div id="Construction-wrapper" class="panel-collapse collapse">
 		            <div class="panel-body">
-						<div class="col-xs-12">
+						<div class="col-xs-12" title="Change the number of people living and working per square foot">
 							<input type="text" id="nDensity" name="nDensity" value="100">
 							Developed Land Density
 						</div>
@@ -235,7 +235,7 @@
 							<input type="text" id="nBldgSizeEff" name="nBldgSizeEff" value="100">
 							Building Construction Efficiency
 						</div>
-						<div class="col-xs-12">
+						<div class="col-xs-12" title="Change the average life of buildings measured in years; 50 years is the current average">
 							<input type="text" id="nBldgDepr" name="nBldgDepr" value="50">
 							Deprecation of Construction (Years)
 						</div>
@@ -250,7 +250,7 @@
 		          <div id="Energy-wrapper" class="panel-collapse collapse">
 			            <div class="panel-body">
 
-				            <div class="col-xs-12">
+				            <div class="col-xs-12" title="Change the energy consumption per person; 100% is equal to current consumption levels">
 				                <input type="text" name="nEnergyDemand" id="nEnergyDemand" value="100">
 								Energy Demand
 				        	</div>
@@ -258,15 +258,15 @@
 				        	<div class="col-xs-12" style="font-weight:bold; padding-bottom:2px; padding-top:5px">
 							Energy Production Efficiency
 							</div>
-				            <div class="col-xs-4">
+				            <div class="col-xs-4" title="Change the efficiency of making power from solar energy; 100% is equal to current production efficiency">
 				                	<input type="text" name="nPVEff" id="nPVEff" value="100">
 				                	PV
 				        	</div>
-				            <div class="col-xs-4">
+				            <div class="col-xs-4" title="Change the efficiency of making power from burning biomass (wood); 100% is equal to current production efficiency">
 				                	<input type="text" name="nBioMassEff" id="nBioMassEff" value="100">
 				                	Biomass
 				        	</div>
-				            <div class="col-xs-4">
+				            <div class="col-xs-4" title="Change the efficiency of making power from wind; 100% is equal to current production efficiency">
 				                	<input type="text" name="nWindEff" id="nWindEff" value="100">
 				                	Wind
 				        	</div>
@@ -276,19 +276,19 @@
 							Energy Mix
 							</div>
 
-				        	<div class="col-xs-3">
+				        	<div class="col-xs-3" title="Adjust the percent of total energy needed for county which comes from fossil fuel sources (natural gas or coal); 83% is current percentage in the county">
 				        		<input type="text" name="nEDFuel" id="nEDFuel" value="84" step="1">
 				        		Fossil Fuel
 				        	</div>
-				        	<div class="col-xs-3">
+				        	<div class="col-xs-3" title="Adjust the percent of total energy needed for county which comes from Solar Photovoltaic power; 1% is current percentage in the county">
 				                <input type="text" name="nEDPV" id="nEDPV" value="1" step="1">
 				               	PV
 				        	</div>
-				        	<div class="col-xs-3">
+				        	<div class="col-xs-3" title="Adjust the percent of total energy needed for county which comes from biomass or wood fire; 16% is current percentage in the county">
 			                	<input type="text" name="nEDBioMass" id="nEDBioMass" value="15" step="1">
 			                	BioMass
 				        	</div>
-				        	<div class="col-xs-3">
+				        	<div class="col-xs-3" title="Adjust the percent of total energy needed for county which comes from wind power; 0% is current percentage in the county">
 			                	<input type="text" name="nEDWind" id="nEDWind" value="0" step="1">
 			                	Wind
 				        	</div>
@@ -302,12 +302,12 @@
 		          </div>
 		          <div id="Food-wrapper" class="panel-collapse collapse">
 		            <div class="panel-body">
-			            <div class="col-xs-12">
+			            <div class="col-xs-12" title="Change the number of calories consumed per person per day; 1,900 KCal a day per person is the current average">
 			                <input type="text" name="nFoodDemand" id="nFoodDemand" value="100">
 							Food
 			        	</div>
 						
-			            <div class="col-xs-12">
+			            <div class="col-xs-12" title="Change the efficiency of producing food; 100% is equal to current average production efficiency for each food type">
 			                <input type="text" name="nFoodEff" id="nFoodEff" value="100">
 							Food Production Eff. Imporvement
 			        	</div>
@@ -316,27 +316,27 @@
 							Diet Mix
 						</div>
 
-			            <div class="col-xs-4">
+			            <div class="col-xs-4" title="Adjust the percent of total food needed for county which comes from grains; 45% is current diet mix in the US">
 								<input type="text" name="nFDGrains" id="nFDGrains" value="45">
 								Grains
 			            </div>
-			            <div class="col-xs-4">
+			            <div class="col-xs-4" title="Adjust the percent of total food needed for county which comes from vegetables; 12% is current diet mix in the US">
 								<input type="text" name="nFDVegetables" id="nFDVegetables" value="15">
 								Vegetables
 			        	</div>
-			            <div class="col-xs-4">
+			            <div class="col-xs-4" title="Adjust the percent of total food needed for county which comes from fruits; 9% is current diet mix in the US">
 								<input type="text" name="nFDFruit" id="nFDFruit" value="10">
 								Fruit
 			        	</div>
-			            <div class="col-xs-4">
+			            <div class="col-xs-4" title="Adjust the percent of total food needed for county which comes from cow dairy; 5% is current diet mix in the US">
 								<input type="text" name="nFDDairy" id="nFDDairy" value="5">
 								Dairy
 			            </div>
-			            <div class="col-xs-4">
+			            <div class="col-xs-4" title="Adjust the percent of total food needed for county which comes from meat (cows, pigs, chicken); 23% is current diet mix in the US">
 								<input type="range" name="nFDMeat" id="nFDMeat" value="20">
 								Meat
 			            </div>
-			            <div class="col-xs-4">
+			            <div class="col-xs-4" title="Adjust the percent of total food needed for county which comes from fish; 5% is current diet mix in the US">
 								<input type="text" name="nFDFish" id="nFDFish" value="5">
 								Fish
 			        	</div>
@@ -351,15 +351,15 @@
 		          <div id="Transportation-wrapper" class="panel-collapse collapse">
 		            <div class="panel-body">
 						<div class="row-fluid">
-				            <div class="col-xs-12">
+				            <div class="col-xs-12" title="Change the average number of miles driven per person; 100% is equal to current rate of 6,884 miles per person per year">
 				                <input type="text" name="nMileDriven" id="nMileDriven" value="100">
 								Vehicle Miles Driven - Per Capita
 				        	</div>
-							<div class="col-xs-12">
+							<div class="col-xs-12" title="Change the efficiency of vehicles to use fuel; 100% is equal to current average consumption efficiency of 23.6 miles per gallon">
 								<input type="text" name="nVehicleEff" id="nVehicleEff" value="100">
 								Vehicle Efficiency - MPG
 		        			</div>
-							<div class="col-xs-12">
+							<div class="col-xs-12" title="Change the efficiency of producing biofuel (ethanol); 100% is equal to current average production efficiency for biofuel">
 								<input type="text" name="nBioFuelEff" id="nBioFuelEff" value="100">
 								Biofuel Production Efficiency
 							</div>
@@ -369,15 +369,15 @@
 				        		Vehicle Fuel Mix
 							</div>
 
-			        		<div class="col-xs-4">
+			        		<div class="col-xs-4" title="Adjust the percent of total fuels needed for county which comes from biofuel; 11% is the current percentage in the US">
 								<input type="text" name="nTMBiofuels" id="nTMBiofuels" value="11">
 			        			Biofuels
 			        		</div>
-							<div class="col-xs-4">
+							<div class="col-xs-4" title="Adjust the percent of total fuels needed for county which comes from electricity">
 								<input type="text" name="nTMElectricity" id="nTMElectricity" value="0">
 			        			Electricty
 			        		</div>
-			        		<div class="col-xs-4">
+			        		<div class="col-xs-4" title="Adjust the percent of total fuels needed for county which comes from fossil fuel; 89% is the current percentage in the US">
 								<input type="text" name="nTMFossilfuels" id="nTMFossilfuels" value="89">
 			        			Fossil Fuel
 			        		</div>
@@ -392,19 +392,19 @@
 			        </div>
 		        	<div id="Consumption-wrapper" class="panel-collapse collapse">
 			            <div class="panel-body">
-							<div class="col-xs-12">
+							<div class="col-xs-12" title="Change the average dollars spent on goods per person; 100% is equal to current rate of $1,350 per person per year in the county">
 								<input type="text" id="nGoodPurchased" name="nGoodPurchased" value="100">
 								Goods Purchased
 							</div>
-							<div class="col-xs-12">
+							<div class="col-xs-12" title="Change the average waste produced per person; 100% is equal to current rate of 1,600 lbs per person per year in the US">
 								<input type="text" id="nWasteProduced" name="nWasteProduced" value="100">
 								Waste Produced
 							</div>
-							<div class="col-xs-12">
+							<div class="col-xs-12" title="Adjust the percent of waste diverted to recycling; 55% is the current diversion rate in the US">
 								<input type="text" id="nWasteRecycling" name="nWasteRecycling" value="55">
 								Waste Recycling
 							</div>
-							<div class="col-xs-12">
+							<div class="col-xs-12" title="Change the average water consumed per person; 100% is equal to current rate of 213,417 liters (56,378 gal) per person per year in the US">
 								<input type="text" id="nWaterUsage" name="nWaterUsage" value="100">
 								Water Usage - per capita
 							</div>
