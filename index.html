@@ -1014,7 +1014,13 @@
 			
 			// remove lines from older calculation
 			d3.selectAll("line#cityLines").remove();
-
+			
+			// resize the grid since the scenario is changed now
+			grid.transition()
+        		.duration(1000)
+        		.attr("width", gridSize/2)
+        		.attr("height", gridSize/2);
+			
 			// make recalculation button red
 			d3.select("#checkArea").attr("class", "btn btn-danger");
 
@@ -1537,8 +1543,10 @@
 
 		    	$('#progBar').val((counter/totalCases) * 100);
 
-    			
-			    if (counter < totalCases && numOfTotalAvailableCells>0 && numOfTotalNeededCells!=0) {
+    			// there are cases that resources are available but not the ones that is needed at the time
+    			var neededResourceAvailable = isThereAnyNeededResourceAvailable();
+
+			    if (counter < totalCases && numOfTotalAvailableCells>0 && numOfTotalNeededCells!=0 && neededResourceAvailable) {
 
 			        setTimeout(findCells, 0); // call the cells for the next round - number of rounds is equal to number of settelments-1
 
@@ -1590,6 +1598,18 @@
     					}, 4000);
 			    }
 		};
+
+
+		function isThereAnyNeededResourceAvailable(){
+			// check which landuses are still in need
+			var inNeedLandUses = d3.keys(needLandCellsCount).filter(function(key){return key!="Support" && needLandCellsCount[key]!=0;});
+
+			// check if there is any availability for that landuse
+			var currentNeed = 0;
+			inNeedLandUses.forEach(function(d){currentNeed += landCellsCount[d]});
+
+			return currentNeed!=0? true:false;
+		}
 
 		function findResources(){
 			// remove lines from older calculation
