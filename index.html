@@ -10,6 +10,7 @@
 		<title>e[m]ergy settlement</title>
 		
 		<script src="./js/d3.v3.min.js" charset="utf-8"></script> <!-- D3 -->
+		<script src="http://d3js.org/queue.v1.min.js"></script> <!-- QUEUE -->
 	    
 		<script type="text/javascript" src="https://ajax.cloudflare.com/cdn-cgi/nexp/dok3v=919620257c/cloudflare.min.js"></script>
 	    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -49,6 +50,10 @@
 		   	font-size: 11px;
 		   	font-weight: bold;
 		    color: red;
+		}
+
+		circle.cities{
+			cursor:pointer;
 		}
 
 		progress, #calcProgress, #progUpdate {
@@ -873,6 +878,7 @@
 			.range(colors)
 			.domain(landuse);
 
+
 		//d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/settlements.json", function(settlements){
 		d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/settlements_LR.json", function(settlements){
 
@@ -888,6 +894,7 @@
 				d.resourcesNeed = {Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 				d.totalResourcesNeed = 0;
 				d.isSatisfied = true;
+				d.isClicked = false;
 			});
 
 		popScale.domain(d3.extent(settlements, function(d){return d.population;}));
@@ -1004,11 +1011,22 @@
 		*/
 		
 		updatePopulation = function updatePopulation(){
+			
+			// remove lines from older calculation
+			d3.selectAll("line#cityLines").remove();
+
+			// make recalculation button red
+			d3.select("#checkArea").attr("class", "btn btn-danger");
+
+			// disable remapping button
+			d3.select("#play").attr('disabled', true)
+
 			// re-calculate total population
 			totalPopulation = 0;
 			settlements.forEach(function(d){
 				totalPopulation += +d.population;
 			});
+
 
 			var percentageChange = (100 * (totalPopulation-originalPopulation)/originalPopulation).toFixed(2);
 			// update total population text
@@ -1020,7 +1038,17 @@
 				.text(function(d){return (d.name + ": " + d.population);});
 
 			svg.selectAll("circle.cities")
-				.attr("r", function(d){return popScale(d.population);})
+                .filter(function(d){return d.population!=0;})
+				.transition()
+                .duration(2000)
+                .style("fill", "white")
+                .style("opacity", "1")
+				.attr("r", function(d){return popScale(d.population);});
+
+			svg.selectAll("circle.cities")
+                .filter(function(d){return d.population==0;})
+				.style("opacity", "0.4")
+				.attr("r", "1px");
 
 			// update titles
 			d3.selectAll(".cities").selectAll("title").text(function(d){return d.name + "> population: " + d.population;});
@@ -1075,12 +1103,17 @@
                 })
                 .on("click", function(d){
                 	// console.log(d.takenPoints);
-                	// I think I will remove this from here to the end of each calculation so user can draw it all toghether if needed
+                	d.isClicked = !d.isClicked;
+
+                	var clicked = d.isClicked;
+
+                	// draw lines
+                	d3.selectAll("line." + d.nospacename)
+                		.style("visibility", function(){ return clicked? "visible":"hidden";})
+                		.style("stroke", "black");
+
                 	d3.select("#hull" + d.nospacename)
-						.filter(function(){return settlement.takenPoints.length!=0})
-                		.datum(d3.geom.hull(d.takenPoints))
-                		.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
-                		.attr("opacity", "0.4");
+                		.style("visibility", function(){ return clicked? "visible":"hidden";});
                 });
       	
       	// add name and population of the cities to map
@@ -1126,7 +1159,7 @@
 		// grid.append("title").text("some text")
 
 		// add a line for each city
-
+		/*
 		svg.selectAll("line")
 			.data(settlements)
 			.enter().append("line")
@@ -1138,6 +1171,7 @@
 				.attr("y2", function(d){return d.y;})
 				.style("stroke", "red")
 				.style("stroke-width", 1.5);
+		*/
 
 		// add a hull for each city
 		hullGroup = svg.selectAll(".hull")
@@ -1446,9 +1480,23 @@
 							.delay(function(d){
 								// push the point to taken points
 								// I will use this to draw boundary for each city
-								settlement.takenPoints.push([d.x + (gridSize/2),d.y + (gridSize/2)]);
+								var ptX = d.x;
+								var ptY = d.y;
+
+								settlement.takenPoints.push([ptX, ptY]);
 								d.isTaken = true;
     							
+    							// draw a line from center of city to cell
+    							svg.append("line")
+									.attr("class", settlement.name)
+									.attr("id", "cityLines")
+									.attr("x1", settlement.x)
+									.attr("y1", settlement.y)
+									.attr("x2", ptX + gridSize/2)
+									.attr("y2", ptY + gridSize/2)
+									.style("stroke", "grey")
+									.style("stroke-width", 0.5);
+
 								// update available resources
 								numOfTotalAvailableCells--;
 								numOfTotalNeededCells--;
@@ -1508,20 +1556,45 @@
 						// play the end of the song
 						$('audio#tetrisSuccess')[0].play();
 
+						// draw the hull and hide it after 2000 ms
 						activeSettlements.forEach(function(settlement){
                 			d3.select("#hull" + settlement.nospacename)
                 				.filter(function(){return settlement.takenPoints.length!=0})
                 				.datum(d3.geom.hull(settlement.takenPoints))
-                				.transition()
-                				.duration(2000)
                 				.attr("d", function(d) { return "M" + d.join("L") + "Z"; });
                 			});
+
+						// hide hull
+						d3.selectAll(".hull")
+							.transition()
+							.delay(1000)
+                			.duration(3000)
+                			.style("visibility", "hidden");
+                		
+                		// hide lines
+                		d3.selectAll("line#cityLines")
+							.transition()
+							.delay(1000)
+                			.duration(3000)
+                			.style("visibility", "hidden");
+
+                		// color cities based on success/failure
+                		d3.selectAll(".cities")
+                			.filter(function(d){return d.population!=0;})
+							.transition()
+							.delay(1000)
+                			.duration(2000)
+                			.style("fill", function(d){return d.totalResourcesNeed==0? "green":"red";})
+                			.style("opacity", "1");
 
     					}, 4000);
 			    }
 		};
 
 		function findResources(){
+			// remove lines from older calculation
+			d3.selectAll("line#cityLines").remove();
+
 			// reset data
 			grid.data().forEach(function(d){d.isTaken = false;})
 			
