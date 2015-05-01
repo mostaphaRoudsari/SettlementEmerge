@@ -1570,6 +1570,9 @@
 			    	}
 			    	
     				setTimeout(function(){
+
+    					// the game is done!
+
 	    				// stop playing the music
 						$('audio#tetrisTune')[0].pause();
 						$('audio#tetrisTune')[0].currentTime = 0;
@@ -1606,6 +1609,10 @@
                 			.duration(2000)
                 			.style("fill", function(d){return d.totalResourcesNeed==0? "green":"red";})
                 			.style("opacity", "1");
+
+                		// set resources round back to 0
+                		counter = 0;
+                		resourcesRound = 0;
 
     					}, 4000);
 			    }
