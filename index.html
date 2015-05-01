@@ -247,7 +247,7 @@
 		          <div class="panel-heading clickable" data-toggle="collapse" data-parent="#accordion" href="#Energy-wrapper">
 		            <h4 class="panel-title">Energy</h4>
 		          </div>
-		          <div id="Energy-wrapper" class="panel-collapse collapse">
+		          <div id="Energy-wrapper" class="panel-collapse collapse in">
 			            <div class="panel-body">
 
 				            <div class="col-xs-12" title="Change the energy consumption per person; 100% is equal to current consumption levels">
@@ -1451,6 +1451,7 @@
 			return true;
 		}
 
+		resourcesRound = 0; // in the first round natural won't be taken - In the second round it will be only natural
 		rounds = d3.range(settlements.length);
 		totalCases = rounds.length * settlements.length * landuses.length;
 
@@ -1464,12 +1465,18 @@
 				var round = rounds[roundIndex];
 
 				// do stuff
-				var ids = settlement.sortedResourcesIds[landuses[landuseIndex]][round]; //find ids of resources based on rank
+				// I need to find the right ids here for roundresource 1 - Let's go to class for now
+				if (resourcesRound == 0){
+					var ids = settlement.sortedResourcesIds[landuses[landuseIndex]][round]; //find ids of resources based on rank
+				}else{
+					var ids = settlement.sortedResourcesIds["Natural"][round];
+				}
 
 				// check if resources are needed and if there is still anything left
 				if (settlement.totalResourcesNeed == 0) settlement.isSatisfied;
 
-				if (settlement.isSatisfied || landCellsCount[lu] ==0 || settlement.resourcesNeed[lu] == 0) ids = null;
+				if (settlement.isSatisfied || (landCellsCount[lu] ==0 && resourcesRound==0) || settlement.resourcesNeed[lu] == 0) ids = null;
+
 
 				if(ids!=null){
     				
@@ -1478,7 +1485,8 @@
     					var id = ids[i];
 
     					// break the loop if resources is not available or 
-    					if (needLandCellsCount[lu]==0 || settlement.resourcesNeed[lu] == 0 ||  landCellsCount[lu] ==0 ) break;
+    					if (needLandCellsCount[lu]==0 || settlement.resourcesNeed[lu] == 0) break;
+    					if (resourcesRound!=0 && landCellsCount["Natural"]==0) break;
 
     					d3.select("#id_" + id)
     						.filter(function(d){return !d.isTaken})
@@ -1488,6 +1496,9 @@
 								// I will use this to draw boundary for each city
 								var ptX = d.x;
 								var ptY = d.y;
+								var takenLanduse = resourcesRound==0? lu:"Natural";
+
+								if (resourcesRound!=0) console.log(takenLanduse);
 
 								settlement.takenPoints.push([ptX, ptY]);
 								d.isTaken = true;
@@ -1513,14 +1524,14 @@
 								
 								// update availability text
 								needLandCellsCount[lu]--;
-								landCellsCount[lu]--;
+								landCellsCount[takenLanduse]--;
 
 								var delay = (i + 2) * 20;
 
 								// console.log("totalResourcesNeed", settlement.name , " > " , settlement.totalResourcesNeed);
 
 								// update text
-								d3.select("#available" + lu).transition().delay(delay).text(landCellsCount[lu]);
+								d3.select("#available" + takenLanduse).transition().delay(delay).text(landCellsCount[takenLanduse]);
 								
 								d3.select("#need" + lu).transition().delay(delay).text(needLandCellsCount[lu]);
 								
@@ -1529,8 +1540,8 @@
     						
     						.duration(50)
     						.attr("width", gridSize)
-    						.attr("height", gridSize);
-    						//.attr("fill", "black");    					
+    						.attr("height", gridSize)
+    						.attr("fill", colorscale(lu)); // for case of changing landuse
     				}
 
     			}
@@ -1543,8 +1554,9 @@
 
 		    	$('#progBar').val((counter/totalCases) * 100);
 
-    			// there are cases that resources are available but not the ones that is needed at the time
-    			var neededResourceAvailable = isThereAnyNeededResourceAvailable();
+    			
+    			// let's check if there is a need to go to the next round and change the natural landuse
+    			neededResourceAvailable = isThereAnyNeededResourceAvailable();
 
 			    if (counter < totalCases && numOfTotalAvailableCells>0 && numOfTotalNeededCells!=0 && neededResourceAvailable) {
 
@@ -1605,10 +1617,19 @@
 			var inNeedLandUses = d3.keys(needLandCellsCount).filter(function(key){return key!="Support" && needLandCellsCount[key]!=0;});
 
 			// check if there is any availability for that landuse
-			var currentNeed = 0;
-			inNeedLandUses.forEach(function(d){currentNeed += landCellsCount[d]});
+			var currentAvailableResourcesForInNeed = 0;
+			inNeedLandUses.forEach(function(d){currentAvailableResourcesForInNeed += landCellsCount[d]});
 
-			return currentNeed!=0? true:false;
+			// if currentNeed is 0 and resourceRound == 0 then change resourceRound to 1
+			if (currentAvailableResourcesForInNeed==0 && resourcesRound==0){
+				resourcesRound = 1;
+				counter = 0; // start from scratch to search and use natural
+				return true;
+			}else if (currentAvailableResourcesForInNeed==0 && resourcesRound == 1 && landCellsCount["Natural"]!=0){
+				return true; // still natural resource is left 
+			}
+
+			return currentAvailableResourcesForInNeed!=0? true:false;
 		}
 
 		function findResources(){
