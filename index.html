@@ -728,9 +728,9 @@
 
 	    });
 		
-		var energyMixSliders = ["nEDPV","nEDBioMass", "nEDWind", "nEDFuel"];
-		var foodMixSliders = ["nFDGrains", "nFDVegetables", "nFDFruit", "nFDDairy", "nFDMeat", "nFDFish"];
-		var vehicleMixSliders = ["nTMBiofuels", "nTMElectricity", "nTMFossilfuels"];
+		var energyMixSliders = {"nEDPV":0, "nEDBioMass":0, "nEDWind":0, "nEDFuel":0};
+		var foodMixSliders = {"nFDGrains":0, "nFDVegetables":0, "nFDFruit":0, "nFDDairy":0, "nFDMeat":0, "nFDFish":0};
+		var vehicleMixSliders = {"nTMBiofuels":0, "nTMElectricity":0, "nTMFossilfuels":0};
 
 
 		// map sliders for changes
@@ -743,28 +743,133 @@
 			d3.select("#play").attr('disabled', true);
 			$('#progUpdate').empty();
 
-			if (vehicleMixSliders.indexOf(changedSliderName)!=-1){
+			if (d3.keys(vehicleMixSliders).indexOf(changedSliderName)!=-1){
 				// update slider values for vehicle mix
 				// for now electricity is disabled
 				if (changedSliderName=="nTMFossilfuels"){
 					currentSliderValues["nTMBiofuels"] = 100 - newValue;
-					updateSliderValue("nTMBiofuels", 100 - newValue);
+					updateSliderValue("nTMBiofuels", 100 - newValue, vehicleMixSliders);
 				}else{
 					currentSliderValues["nTMFossilfuels"] = 100 - newValue;
-					updateSliderValue("nTMFossilfuels", 100 - newValue);
+					updateSliderValue("nTMFossilfuels", 100 - newValue, vehicleMixSliders);
 				}
-			} else if (energyMixSliders.indexOf(changedSliderName)!=-1){
-				// I still need to write mapping functionalities
+			} else if (d3.keys(energyMixSliders).indexOf(changedSliderName)!=-1){
 				
-			} else if (foodMixSliders.indexOf(changedSliderName)!=-1){
-				// I still need to write mapping functionalities
+				updateSlidersGroupValue(energyMixSliders, changedSliderName, "nEDFuel");
+				
+			} else if (d3.keys(foodMixSliders).indexOf(changedSliderName)!=-1){
+				
+				updateSlidersGroupValue(foodMixSliders, changedSliderName, "nFDGrains");
 			}
 		}
 
-		function updateSliderValue(sliderName, sliderValue){
+		function updateSlidersGroupValue(mixSlidersName, changedSliderName, primarySlideName){
 			
+			var totalMixValues = 0
+			d3.keys(mixSlidersName).map(function(d){
+				totalMixValues += currentSliderValues[d];
+				mixSlidersName[d] = currentSliderValues[d];
+			});
+
+			var keysSorted = d3.keys(mixSlidersName)
+				.filter(function(d){return d!=changedSliderName && d!=primarySlideName;})
+				.sort(function(a,b){return mixSlidersName[b]-mixSlidersName[a]});
+
+			var delta = totalMixValues - 100; // now I need to remap the values to make delta == 0
+
+			// if the slider change is not the fossiel fuel then try to add/remove from the slider
+			if (delta > 0){
+
+				if (changedSliderName!=primarySlideName){
+					
+					if (mixSlidersName[primarySlideName] >= delta){
+
+						//just upsate fuel and it's all good
+						updateSliderValue(primarySlideName, mixSlidersName[primarySlideName] - delta, mixSlidersName);
+						return;
+
+					}else if (mixSlidersName[primarySlideName] < delta){
+						
+						// change the value of delta
+						delta = delta - mixSlidersName[primarySlideName];
+
+						// set fuel to 0
+						updateSliderValue(primarySlideName, 0, mixSlidersName);
+
+						// take out of the slider with the largest value
+						for (var i=0; i< keysSorted.length; i++){
+							
+							var slider = keysSorted[i];
+							
+							if (mixSlidersName[slider] >= delta){
+								
+								// update  slider value and it's done
+								updateSliderValue(slider, mixSlidersName[slider] - delta, mixSlidersName);
+								return;
+
+							}else{
+
+								// change the value of delta
+								delta = delta - mixSlidersName[slider];
+
+								// set the value to 0 and go for the next slide
+								updateSliderValue(slider, 0, mixSlidersName);
+								
+								}
+							}
+						}
+					}else{
+
+						// value for primary has changed
+						// take out of the slider with the largest value
+						for (var i=0; i< keysSorted.length; i++){
+							
+							var slider = keysSorted[i];
+
+							if (mixSlidersName[slider] >= delta){
+								
+								// update  slider value and it's done
+								updateSliderValue(slider, mixSlidersName[slider] - delta, mixSlidersName);
+								return;
+
+							}else{
+								// change the value of delta and go for the next slider
+								delta = delta - mixSlidersName[slider];
+
+								// set the value to 0
+								updateSliderValue(slider, 0, mixSlidersName);
+								
+							}
+						}
+					}
+			}else{
+
+				// total value is less than 100%
+				if (changedSliderName!=primarySlideName){
+					// just add it to primary slider
+					updateSliderValue(primarySlideName, mixSlidersName[primarySlideName] - delta, mixSlidersName);
+					return;
+
+				}else{
+
+					// update  slider value with the largest value
+					var slider = keysSorted[0];
+					updateSliderValue(slider, mixSlidersName[slider] - delta, mixSlidersName);
+					return;
+
+				}
+			}
+
+		}
+
+		function updateSliderValue(sliderName, sliderValue, sliderGroupName){
+
 			$("#" + sliderName).data("ionRangeSlider")
 				.update({ from: sliderValue});
+			
+			currentSliderValues[sliderName] = sliderValue;
+			sliderGroupName[sliderName] = sliderValue;
+
 		}
 
 	</script>
@@ -1474,6 +1579,7 @@
 					var ids = settlement.sortedResourcesIds[landuses[landuseIndex]][round]; //find ids of resources based on rank
 				}else{
 					var ids = settlement.sortedResourcesIds["Natural"][round];
+					if (lu == "Water") ids = null; // water cannot take from natural
 				}
 
 				// check if resources are needed and if there is still anything left
@@ -1502,7 +1608,7 @@
 								var ptY = d.y;
 								var takenLanduse = resourcesRound==0? lu:"Natural";
 
-								if (resourcesRound!=0) console.log(takenLanduse);
+								// if (resourcesRound!=0) console.log(takenLanduse);
 
 								settlement.takenPoints.push([ptX, ptY]);
 								d.isTaken = true;
@@ -1545,7 +1651,7 @@
     						.duration(50)
     						.attr("width", gridSize)
     						.attr("height", gridSize)
-    						.attr("fill", colorscale(lu)); // for case of changing landuse
+    						.style("fill", colorscale(lu)); // for case of changing landuse
     				}
 
     			}
@@ -1631,9 +1737,17 @@
 			// check which landuses are still in need
 			var inNeedLandUses = d3.keys(needLandCellsCount).filter(function(key){return key!="Support" && needLandCellsCount[key]!=0;});
 
+			
+			if (resourcesRound!=0){
+				// in round two water shouldn't be considered as natural cannot change to water
+				if (inNeedLandUses.length==1 && inNeedLandUses[0] == ["Water"]) return false;
+				inNeedLandUses.filter(function(key){return key!="Water"});
+			}
+
 			// check if there is any availability for that landuse
 			var currentAvailableResourcesForInNeed = 0;
 			inNeedLandUses.forEach(function(d){currentAvailableResourcesForInNeed += landCellsCount[d]});
+
 
 			// if currentNeed is 0 and resourceRound == 0 then change resourceRound to 1
 			if (currentAvailableResourcesForInNeed==0 && resourcesRound==0){
