@@ -740,7 +740,8 @@
             if (!isNaN(newValue)) currentSliderValues[changedSliderName] = newValue;
 			
 			d3.select("#checkArea").attr("class", "btn btn-danger");
-			d3.select("#play").attr('disabled', true)
+			d3.select("#play").attr('disabled', true);
+			$('#progUpdate').empty();
 
 			if (vehicleMixSliders.indexOf(changedSliderName)!=-1){
 				// update slider values for vehicle mix
@@ -1025,7 +1026,10 @@
 			d3.select("#checkArea").attr("class", "btn btn-danger");
 
 			// disable remapping button
-			d3.select("#play").attr('disabled', true)
+			d3.select("#play").attr('disabled', true);
+
+			// clear progress update text
+			$('#progUpdate').empty();
 
 			// re-calculate total population
 			totalPopulation = 0;
@@ -1579,6 +1583,10 @@
 						// play the end of the song
 						$('audio#tetrisSuccess')[0].play();
 
+						
+						// enable controls during the run
+						// d3.select("form").selectAll("input, select, button, textarea").attr("disabled", false);
+
 						// draw the hull and hide it after 2000 ms
 						activeSettlements.forEach(function(settlement){
                 			d3.select("#hull" + settlement.nospacename)
@@ -1660,6 +1668,9 @@
 			counter = 0;
 
 			$('#progUpdate').empty();
+
+			// disable controls during the run
+			// d3.select("form").selectAll("input, select, button, textarea").attr("disabled", true);
 
 			findCells();
 
