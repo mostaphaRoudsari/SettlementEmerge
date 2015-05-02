@@ -1014,7 +1014,7 @@
 		updatePopulation = function updatePopulation(){
 			
 			// remove lines from older calculation
-			d3.selectAll("line#cityLines").remove();
+			d3.selectAll("line.cityLines").remove();
 			
 			// resize the grid since the scenario is changed now
 			grid.transition()
@@ -1118,7 +1118,7 @@
                 	var clicked = d.isClicked;
 
                 	// draw lines
-                	d3.selectAll("line." + d.nospacename)
+                	d3.selectAll("line#" + d.nospacename)
                 		.style("visibility", function(){ return clicked? "visible":"hidden";})
                 		.style("stroke", "black");
 
@@ -1509,8 +1509,8 @@
     							
     							// draw a line from center of city to cell
     							svg.append("line")
-									.attr("class", settlement.name)
-									.attr("id", "cityLines")
+									.attr("id", settlement.name)
+									.attr("class", "cityLines")
 									.attr("x1", settlement.x)
 									.attr("y1", settlement.y)
 									.attr("x2", ptX + gridSize/2)
@@ -1603,7 +1603,7 @@
                 			.style("visibility", "hidden");
                 		
                 		// hide lines
-                		d3.selectAll("line#cityLines")
+                		d3.selectAll("line.cityLines")
 							.transition()
 							.delay(1000)
                 			.duration(3000)
@@ -1649,7 +1649,7 @@
 
 		function findResources(){
 			// remove lines from older calculation
-			d3.selectAll("line#cityLines").remove();
+			d3.selectAll("line.cityLines").remove();
 
 			// reset data
 			grid.data().forEach(function(d){d.isTaken = false;})
