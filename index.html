@@ -1,5 +1,5 @@
 <html lang="en">
-	
+
 	<head>
 		<meta charset="utf-8">
 	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,15 +8,15 @@
 	    <meta name="author: Mostapha Roudsari" content="">
 
 		<title>e[m]ergy settlement</title>
-		
+
 		<script src="./js/d3.v3.min.js" charset="utf-8"></script> <!-- D3 -->
 		<script src="http://d3js.org/queue.v1.min.js"></script> <!-- QUEUE -->
-	    
+
 		<script type="text/javascript" src="https://ajax.cloudflare.com/cdn-cgi/nexp/dok3v=919620257c/cloudflare.min.js"></script>
 	    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 		<script src="./rangeslider_files/js/ion.rangeSlider.js"></script>
-		
+
 		<link rel="stylesheet" href="./rangeslider_files/css/normalize.css" />
 	    <link rel="stylesheet" href="./rangeslider_files/css/ion.rangeSlider.css" />
 		<link rel="stylesheet" href="./rangeslider_files/css/ion.rangeSlider.skinNice.css"/>
@@ -58,18 +58,18 @@
 
 		progress, #calcProgress, #progUpdate {
 			float:left;
-			margin-top:10px;			
+			margin-top:10px;
 		}
-		
+
 		progress, #calcProgress {
 			margin-right:10px;
 			width: 11.5em;
 		}
-		
+
 		#progUpdate, #calcProgress{
 			color:#000;
 		}
-		
+
 		.hull {
 		  fill: none;
 		  stroke: black;
@@ -85,7 +85,7 @@
 		text.disabled {
 		fill: transparent !important;
 		}
-		
+
 		.axis path,
 		.axis line {
 		    fill: none;
@@ -156,36 +156,6 @@
 
 <body>
 
-	<script type="text/javascript">
-		// sliders
-		var energyDemand = 1.0,
-			EDPV = 0.0,
-			EDBioMass = 0.1,
-			EDWind = 0.0,
-			EDFuel = 0.9,
-			FoodDemand = 1.0,
-			FDGrains = 0.46,
-			FDVegetables = 0.12,
-			FDFruit = 0.08,
-			FDDairy = 0.05,
-			FDMeat = 0.23,
-			FDFish = 0.05,
-			MileDriven = 1.0,
-			VehicleEff = 1.0,
-			GasolineMix = 0.1;
-
-		var sumEnergyMixValues = function checkEnergyMixValues(){
-			
-			return 1 - (EDFuel + EDPV + EDWind + EDBioMass).toFixed(1) < 0.1;
-		}
-
-
-		var sumDietMixValues = function checkDietMixValues(){
-			return FDGrains + FDVegetables + FDFruit + FDDairy + FDMeat + FDFish > 0.99;
-		}
-
-	</script>
-
 	    <!-- Page Content -->
 	    <div class="row-fluid">
 	    	<div class="corner-ribbon top-right sticky blue">BETA</div>
@@ -195,16 +165,16 @@
 		    </a>
 		    </div>
 	    </div>
-	    
+
 		<div class=" col-xs-12 collapse" id="collapseDiv">
 
 		</div>
-		
+
 		<!-- don't remove the form -->
 	    <form id="inputSliders">
 	    <div class="row-fluid">
 			<hr>
-	    	<!-- sliders and eventually graphs -->   	
+	    	<!-- sliders and eventually graphs -->
 	        <div id="sliders" class="col-xs-3 panel-group" id="accordion">
 
 				<div class="panel panel-info">
@@ -213,11 +183,11 @@
 		          	</div>
 		          	<div id="Introduction-wrapper" class="panel-collapse collapse in">
 		            	<div class="panel-body">
-			    			<p>The New Chautauqua Game evaluates the land needed to harvest and concentrate renewable energies to support the population of the county.</p> 
+			    			<p>The New Chautauqua Game evaluates the land needed to harvest and concentrate renewable energies to support the population of the county.</p>
 							<p>To play the game adjust the slider bars below to modify the rates of production and consumption in the county, then click on “Check Land Area” to see if your scenario can support the population on the resources of the county.</p>
 							<p>To see the distribution of land uses within the county, select a population scenario and click “Remap Chautauqua” to see the results.</p>
 							<p>You can read more about the project <a href="http://www.mebd-penndesign.info/New-Chautauqua-Game" target="_blank">here</a>.</p>
-		          		</div>	          
+		          		</div>
 		        	</div>
 		        </div>
 
@@ -240,7 +210,7 @@
 							Deprecation of Construction (Years)
 						</div>
 		            </div>
-		          </div>	          
+		          </div>
 		        </div>
 
 				<div class="panel panel-warning">
@@ -254,7 +224,7 @@
 				                <input type="text" name="nEnergyDemand" id="nEnergyDemand" value="100">
 								Energy Demand
 				        	</div>
-				        	
+
 				        	<div class="col-xs-12" style="font-weight:bold; padding-bottom:2px; padding-top:5px">
 							Energy Production Efficiency
 							</div>
@@ -270,14 +240,14 @@
 				                	<input type="text" name="nWindEff" id="nWindEff" value="100">
 				                	Wind
 				        	</div>
-							
+
 
 							<div class="col-xs-12" style="font-weight:bold; padding-bottom:2px; padding-top:5px">
 							Energy Mix
 							</div>
 
 				        	<div class="col-xs-3" title="Adjust the percent of total energy needed for county which comes from fossil fuel sources (natural gas or coal); 83% is current percentage in the county">
-				        		<input type="text" name="nEDFuel" id="nEDFuel" value="84" step="1">
+				        		<input type="text" name="nEDFuel" id="nEDFuel" value="98" step="1">
 				        		Fossil Fuel
 				        	</div>
 				        	<div class="col-xs-3" title="Adjust the percent of total energy needed for county which comes from Solar Photovoltaic power; 1% is current percentage in the county">
@@ -285,7 +255,7 @@
 				               	PV
 				        	</div>
 				        	<div class="col-xs-3" title="Adjust the percent of total energy needed for county which comes from biomass or wood fire; 16% is current percentage in the county">
-			                	<input type="text" name="nEDBioMass" id="nEDBioMass" value="15" step="1">
+			                	<input type="text" name="nEDBioMass" id="nEDBioMass" value="1" step="1">
 			                	BioMass
 				        	</div>
 				        	<div class="col-xs-3" title="Adjust the percent of total energy needed for county which comes from wind power; 0% is current percentage in the county">
@@ -295,7 +265,7 @@
 			            </div>
 		          </div>
 				</div>
-				
+
 				<div class="panel panel-warning">
 		          <div class="panel-heading clickable" data-toggle="collapse" data-parent="#accordion" href="#Food-wrapper">
 		            <h4 class="panel-title">Food Demand</h4>
@@ -306,12 +276,12 @@
 			                <input type="text" name="nFoodDemand" id="nFoodDemand" value="100">
 							Food
 			        	</div>
-						
+
 			            <div class="col-xs-12" title="Change the efficiency of producing food; 100% is equal to current average production efficiency for each food type">
 			                <input type="text" name="nFoodEff" id="nFoodEff" value="100">
 							Food Production Eff. Imporvement
 			        	</div>
-						
+
 						<div class="col-xs-12" style="font-weight:bold; padding-bottom:2px; padding-top:5px">
 							Diet Mix
 						</div>
@@ -341,9 +311,9 @@
 								Fish
 			        	</div>
 		            </div>
-		          </div>	          
+		          </div>
 		        </div>
-				
+
 				<div class="panel panel-warning">
 		          <div class="panel-heading clickable" data-toggle="collapse" data-parent="#accordion" href="#Transportation-wrapper">
 		            <h4 class="panel-title">Transportation</h4>
@@ -383,7 +353,7 @@
 			        		</div>
 			        	</div>
 		            </div>
-		          </div>	          
+		          </div>
 		        </div>
 
 				<div class="panel panel-warning">
@@ -409,7 +379,7 @@
 								Water Usage - per capita
 							</div>
 			            </div>
-		          	</div>	          
+		          	</div>
 		        </div>
 
             </div>
@@ -417,17 +387,17 @@
 	    	<!-- map -->
 	            <!--
 	            <h3>MAP</h3>
-	            <span style:"font-size:12px"> Hover the mouse on circles to see name and population. 
+	            <span style:"font-size:12px"> Hover the mouse on circles to see name and population.
 				Drag circles to relocate the cities - Right click to change population! Loading data will take few seconds...</span>
 				-->
 				<div class="row-fluid">
 					<div class="col-xs-4">
 						<div class="row-fluid panel panel-info" title="Load different population scenarios. You can change population of each city by righ clicking on the circle and input a number. Use show populations button to see the population for each city.">
-							
+
 							<div class="panel-heading">
 	                			<h4 class="panel-title"> 1. Population Scenario </h4>
 	                		</div>
-							
+
 							<div class = "panel-body">
 								<div class="row-fluid">
 									<table class="table" class="col-xs-12">
@@ -457,7 +427,7 @@
 		                	</div>
 
 			            </div>
-						
+
 						<div class="row-fluid panel panel-info">
 							<div class="panel-heading">
 	                			<h4 class="panel-title"> 2. Land Area </h4>
@@ -542,7 +512,7 @@
 											<div id="needAgriculture" class="col-xs-2 report"></div>
 											<div id="needDeveloped" class="col-xs-2 report"></div>
 											<div id="needNatural" class="col-xs-2 report"></div>
-											<div id="needWetlands" class="col-xs-2 report"></div>								
+											<div id="needWetlands" class="col-xs-2 report"></div>
 										</div>
 									</div>
 								</div>
@@ -561,7 +531,7 @@
 								</div>
 							</div>
 						</div>
-								
+
 					</div>
 						</div>
 					</div>
@@ -580,9 +550,9 @@
 
 		var currentSliderValues = {
 			"nEDPV": 1,
-			"nEDBioMass": 15,
+			"nEDBioMass": 1,
 			"nEDWind": 0,
-			"nEDFuel": 84,
+			"nEDFuel": 98,
 			"nFDGrains": 45,
 			"nFDVegetables": 15,
 			"nFDFruit": 10,
@@ -700,34 +670,34 @@
 	        $("#nBldgSizeEff").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ",",
 	            onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
-	        });	        
+	        });
 	        $("#nBldgDepr").ionRangeSlider({
 	            hide_min_max: true, min: 10, max: 150, step: 10, postfix:"yr", grid: false, prettify_separator: ",",
 	            onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
-	       	
+
 	       	$("#nGoodPurchased").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
-	        
+
 	        $("#nWasteProduced").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
-	        });	        
-	       	
+	        });
+
 	       	$("#nWasteRecycling").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 100, step: 1, postfix:"%", grid: false, prettify_separator: ","
 	            , keyboard: true, keyboard_step: 1, onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
-	       	
+
 	       	$("#nWaterUsage").ionRangeSlider({
 	            hide_min_max: true, min: 0, max: 200, step: 10, postfix:"%", grid: false, prettify_separator: ","
 	            , onFinish: function (data) {updateSlidersValue(data.input[0].name, data.from);}
 	        });
 
 	    });
-		
+
 		var energyMixSliders = {"nEDPV":0, "nEDBioMass":0, "nEDWind":0, "nEDFuel":0};
 		var foodMixSliders = {"nFDGrains":0, "nFDVegetables":0, "nFDFruit":0, "nFDDairy":0, "nFDMeat":0, "nFDFish":0};
 		var vehicleMixSliders = {"nTMBiofuels":0, "nTMElectricity":0, "nTMFossilfuels":0};
@@ -735,10 +705,10 @@
 
 		// map sliders for changes
 		function updateSlidersValue(changedSliderName, newValue){
-            
+
             // update the value of sliders and change color of recalculate and remap buttons
             if (!isNaN(newValue)) currentSliderValues[changedSliderName] = newValue;
-			
+
 			d3.select("#checkArea").attr("class", "btn btn-danger");
 			d3.select("#play").attr('disabled', true);
 			$('#progUpdate').empty();
@@ -754,17 +724,17 @@
 					updateSliderValue("nTMFossilfuels", 100 - newValue, vehicleMixSliders);
 				}
 			} else if (d3.keys(energyMixSliders).indexOf(changedSliderName)!=-1){
-				
+
 				updateSlidersGroupValue(energyMixSliders, changedSliderName, "nEDFuel");
-				
+
 			} else if (d3.keys(foodMixSliders).indexOf(changedSliderName)!=-1){
-				
+
 				updateSlidersGroupValue(foodMixSliders, changedSliderName, "nFDGrains");
 			}
 		}
 
 		function updateSlidersGroupValue(mixSlidersName, changedSliderName, primarySlideName){
-			
+
 			var totalMixValues = 0
 			d3.keys(mixSlidersName).map(function(d){
 				totalMixValues += currentSliderValues[d];
@@ -781,7 +751,7 @@
 			if (delta > 0){
 
 				if (changedSliderName!=primarySlideName){
-					
+
 					if (mixSlidersName[primarySlideName] >= delta){
 
 						//just upsate fuel and it's all good
@@ -789,7 +759,7 @@
 						return;
 
 					}else if (mixSlidersName[primarySlideName] < delta){
-						
+
 						// change the value of delta
 						delta = delta - mixSlidersName[primarySlideName];
 
@@ -798,11 +768,11 @@
 
 						// take out of the slider with the largest value
 						for (var i=0; i< keysSorted.length; i++){
-							
+
 							var slider = keysSorted[i];
-							
+
 							if (mixSlidersName[slider] >= delta){
-								
+
 								// update  slider value and it's done
 								updateSliderValue(slider, mixSlidersName[slider] - delta, mixSlidersName);
 								return;
@@ -814,7 +784,7 @@
 
 								// set the value to 0 and go for the next slide
 								updateSliderValue(slider, 0, mixSlidersName);
-								
+
 								}
 							}
 						}
@@ -823,11 +793,11 @@
 						// value for primary has changed
 						// take out of the slider with the largest value
 						for (var i=0; i< keysSorted.length; i++){
-							
+
 							var slider = keysSorted[i];
 
 							if (mixSlidersName[slider] >= delta){
-								
+
 								// update  slider value and it's done
 								updateSliderValue(slider, mixSlidersName[slider] - delta, mixSlidersName);
 								return;
@@ -838,7 +808,7 @@
 
 								// set the value to 0
 								updateSliderValue(slider, 0, mixSlidersName);
-								
+
 							}
 						}
 					}
@@ -866,7 +836,7 @@
 
 			$("#" + sliderName).data("ionRangeSlider")
 				.update({ from: sliderValue});
-			
+
 			currentSliderValues[sliderName] = sliderValue;
 			sliderGroupName[sliderName] = sliderValue;
 
@@ -890,7 +860,7 @@
 			showCityNames = false,
 			originalPopulation = 0,
 			totalPopulation = 0;
-		
+
 		var	supportLandArea = 0,
 			primaryLandArea = 0;
 
@@ -904,21 +874,21 @@
 						{landuse: "Natural", primary: 0, support: 0, total: 0},
 						{landuse: "Wetlands", primary: 0, support: 0, total: 0}]
 
-		
+
 		// place holder for number of cells
 		var landCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 		var originalLandCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
 
-		
+
 		var initialSettlements,
 			activeSettlements;
 
 		// calculate number of cells needed for each city for each landuse
-		
+
 		calculateSettlementsNeed = function calculateSettlementsNeed(){
-				
+
 				needLandCellsCount = {Support : 0, Wetlands : 0, Water: 0, Natural: 0, Developed: 0, Agriculture: 0, Forest: 0};
-				
+
 				// reset taken points for every point
 	        	initialSettlements.forEach(function(settlement){
 
@@ -939,7 +909,7 @@
 				numOfTotalNeededCells = 0;
 
 				activeSettlements.forEach(function(settlement){
-					
+
 					numOfTotalAvailableCells = cells.length;
 					settlement.totalResourcesNeed = 0;
 
@@ -951,9 +921,9 @@
 
 						// number of cells = (population  * needareaPerPerson) /cell Area
 						var numOfCells = parseInt((settlement.population * lu.primary)/ cellArea);
-						
+
 						settlement.resourcesNeed[lu.landuse] = numOfCells;
-						
+
 						needLandCellsCount[lu.landuse] += numOfCells;
 
 						// make sure Support land area doesn't get into calculation here
@@ -961,15 +931,15 @@
 							settlement.totalResourcesNeed += numOfCells;
 							numOfTotalNeededCells += numOfCells;
 						}
-						
+
 						// update text
 						d3.select("#need" + lu.landuse).transition().duration(500).text(needLandCellsCount[lu.landuse]);
 					});
-				
+
 					if (settlement.totalResourcesNeed!=0) settlement.isSatisfied = false;
-					
+
 				});
-				
+
 				d3.keys(originalLandCellsCount).forEach(function(lu){
 					landCellsCount[lu] = originalLandCellsCount[lu];
 				})
@@ -990,7 +960,7 @@
 
 		//d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/bitmapdata.json", function(data){
 		d3.json("https://dl.dropboxusercontent.com/u/16228160/D3TestData/bitmapdata_LR.json", function(data){
-		
+
 		initialSettlements = settlements;
 
 		// population table - Based on: http://christopheviau.com/d3_tutorial/
@@ -1021,10 +991,10 @@
 		cellArea = totalArea / numOfTotalAvailableCells;
 
 		popScale.range([Math.min(8, 2*gridSize), Math.min(4, gridSize)]);
-		
+
 		// update height
 		mapHeight = Math.min(mapHeight, mapWidth);
-		
+
 		// take care of whitespace in city names
 		settlements.forEach(function(d){d.nospacename = d.name.replace(" ", "\\ ")});
 
@@ -1033,8 +1003,8 @@
 			.attr("width", mapWidth)
 			.attr("height", mapHeight)
 			.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");			
-		
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
 		// add grid cells
 		var grid = svg.selectAll("rect")
@@ -1076,19 +1046,19 @@
 	      .enter().append("g")
 	        .attr("class", "legend")
 	        .attr("transform", function(d, i) { return "translate(0," + (i+1) * legendSize + ")"; });
-				
+
 		legend.append("rect")
         	.attr("width", 0.8 * legendSize)
         	.attr("height", 0.8 * legendSize)
         	.style("fill", function(d){return colorscale(d);});
-		
+
 		legend.append("text")
 	        .attr("x", 1.1 * legendSize)
 	        .attr("y", .4 * legendSize)
 	        .attr("dy", ".35em")
 	        .style("text-anchor", "start")
 	        .text(function(d) { return d; });
-		
+
 		svg.selectAll(".info")
 			.data(["* Each cell represnts " + cellArea.toFixed(2) + " acres."])
 			.enter()
@@ -1101,7 +1071,7 @@
 
 		// Added tooltip to make sure x - y values make sense
 		// grid.append("title").text(function(d){return d.x + "|" + d.y;})
-		
+
       	/*
       	// Define drag beavior
 	    var drag = d3.behavior.drag()
@@ -1115,18 +1085,18 @@
 	            })
 	        });
 		*/
-		
+
 		updatePopulation = function updatePopulation(){
-			
+
 			// remove lines from older calculation
 			d3.selectAll("line.cityLines").remove();
-			
+
 			// resize the grid since the scenario is changed now
 			grid.transition()
         		.duration(1000)
         		.attr("width", gridSize/2)
         		.attr("height", gridSize/2);
-			
+
 			// make recalculation button red
 			d3.select("#checkArea").attr("class", "btn btn-danger");
 
@@ -1230,7 +1200,7 @@
                 	d3.select("#hull" + d.nospacename)
                 		.style("visibility", function(){ return clicked? "visible":"hidden";});
                 });
-      	
+
       	// add name and population of the cities to map
       	svg.selectAll("text.populationText")
 			.data(settlements)
@@ -1295,7 +1265,7 @@
 					.attr("class", "hull")
 					.attr("id", function(d){return "hull" + d.name});
 
-		
+
 		// draw bar charts
 		// landAreaAvailable vs (totalLandNeedPerPerson * totalPopulation)
 		var barChartMargin = {top:40, right:40, bottom:0, left:60};
@@ -1322,7 +1292,7 @@
 
       	var barChartData = [{name: "County", total : 0,  values: []},
       						{name: "Scenario", total : 0,  values: []}];
-      	
+
       	var x0 = 0;
       	landAreaAvailable.forEach(function(d){
       		barChartData[0].total += +d.total;
@@ -1354,7 +1324,7 @@
 	        .attr("width", 0)
 	        .style("opacity", 0.8)
 	        .style("fill", function(d) {return colorscale(d.landuse); })
-	       
+
 		barChart.selectAll("rect").transition().duration(2000)
 	        .attr("x", function(d) { return x(d.x0);})
 	        .attr("width", function(d) {return x(d.x1) - x(d.x0);});
@@ -1398,11 +1368,11 @@
 			});
 
 		updateBarChart = function updateBarChart(){
-			
+
 			//reset current values
 			barChart.data()[1].total = 0;
 			barChart.data()[1].values = [];
-			
+
 			// set the values based on new land area needed
 			var x0 = 0;
 			totalLandNeedPerPerson.forEach(function(d){
@@ -1420,14 +1390,14 @@
 			    //.delay(function(d, i) { return i * 50})
 			    .attr("x", function(d) { return x(d.x0);})
 	        	.attr("width", function(d) {return x(d.x1) - x(d.x0);});
-	    	
+
 
 	    	barChart.selectAll("title")
 	    		.data(function(d) { return d.values; })
 	    		.text(function(d){return d.landuse + "> Area: " + (d.x1 - d.x0).toFixed(2);});
-	    	
+
 	    	var diff = (barChartData[1].total/barChartData[0].total).toFixed(2);
-			
+
 			// update text
 			d3.select("#barChartComparison").select("span")
 	    		.text( diff + "X")
@@ -1471,12 +1441,12 @@
 				.style("font-size", "1.2em")
 			    .style("color", "grey")
 			    .style("font-weight", "bold");
-			
+
 			d3.select("#primaryLandArea")
 				.text(parseInt(primaryLandArea) + " acres")
 				.style("font-size", "1.2em")
 			    .style("color", "grey")
-			    .style("font-weight", "bold");			    
+			    .style("font-weight", "bold");
 		};
 
 		var populationSc = [{Panama:4572, "Cherry Creek":5211, Ripley:2452, Brocton:5579,
@@ -1517,15 +1487,15 @@
 			}
 
 		  });
-		
+
 		setTimeout(function(){
-			
+
 			// initiate base case
 			$("#inputSliders").submit();
 
 			// add a line to explicitly let the user now what is happening with the scenario.
 			var reportText = ""; //"We need " + diff + " Chautauqua Countys to support the current life style of the population."
-			
+
 			if (diff>1){
 				reportText+=" We need your help in identifying a better solution that only uses the resources of the county."
 			}else{
@@ -1534,30 +1504,15 @@
 
 			// update bar chart
 			updateBarChart();
-			
+
 			}, 100);
 
-		
+
 
 		function getDistance(x0, y0, x1, y1){
 			// this is not the correct distance but since I just use it for comparison
 			// I'm trying to save the extra step of sqrt
 			return Math.pow((x1-x0),2) + Math.pow((y1-y0),2);
-		}
-
-		// check scenario
-		function checkScenario(){
-			if (sumDietMixValues() != 1){
-				alert("Sum of diet values should be equal to 1.00");
-				return false;
-			}
-	       	
-	       	if (sumEnergyMixValues() != 1){
-	       		alert("Sum of energy mix values should be equal to 1.00");
-	       		return false;
-			}
-			
-			return true;
 		}
 
 		resourcesRound = 0; // in the first round natural won't be taken - In the second round it will be only natural
@@ -1589,12 +1544,12 @@
 
 
 				if(ids!=null){
-    				
+
     				for (var i = 0; i < ids.length; i++) {
-    				
+
     					var id = ids[i];
 
-    					// break the loop if resources is not available or 
+    					// break the loop if resources is not available or
     					if (needLandCellsCount[lu]==0 || settlement.resourcesNeed[lu] == 0) break;
     					if (resourcesRound!=0 && landCellsCount["Natural"]==0) break;
 
@@ -1612,7 +1567,7 @@
 
 								settlement.takenPoints.push([ptX, ptY]);
 								d.isTaken = true;
-    							
+
     							// draw a line from center of city to cell
     							svg.append("line")
 									.attr("id", settlement.name)
@@ -1631,7 +1586,7 @@
 								// update need
 								settlement.totalResourcesNeed--;
 								settlement.resourcesNeed[lu]--;
-								
+
 								// update availability text
 								needLandCellsCount[lu]--;
 								landCellsCount[takenLanduse]--;
@@ -1642,12 +1597,12 @@
 
 								// update text
 								d3.select("#available" + takenLanduse).transition().delay(delay).text(landCellsCount[takenLanduse]);
-								
+
 								d3.select("#need" + lu).transition().delay(delay).text(needLandCellsCount[lu]);
-								
+
 								// manage delay in a way that it takes the same for all of cities?
 								return delay;})
-    						
+
     						.duration(50)
     						.attr("width", gridSize)
     						.attr("height", gridSize)
@@ -1655,16 +1610,16 @@
     				}
 
     			}
-				
-				counter++;    
-				
+
+				counter++;
+
 				var progress = 	((counter/totalCases)* 100).toFixed(1);
 
 				$('#progUpdate').empty().append("(" + progress + "%) Round " + round + "> " + lu + " for " + settlement.name);
 
 		    	$('#progBar').val((counter/totalCases) * 100);
 
-    			
+
     			// let's check if there is a need to go to the next round and change the natural landuse
     			neededResourceAvailable = isThereAnyNeededResourceAvailable();
 
@@ -1678,7 +1633,7 @@
 			    	}else{
 			    		$('#progUpdate').empty().append("Ran out of resources!");
 			    	}
-			    	
+
     				setTimeout(function(){
 
     					// the game is done!
@@ -1689,7 +1644,7 @@
 						// play the end of the song
 						$('audio#tetrisSuccess')[0].play();
 
-						
+
 						// enable controls during the run
 						// d3.select("form").selectAll("input, select, button, textarea").attr("disabled", false);
 
@@ -1707,7 +1662,7 @@
 							.delay(1000)
                 			.duration(3000)
                 			.style("visibility", "hidden");
-                		
+
                 		// hide lines
                 		d3.selectAll("line.cityLines")
 							.transition()
@@ -1737,7 +1692,7 @@
 			// check which landuses are still in need
 			var inNeedLandUses = d3.keys(needLandCellsCount).filter(function(key){return key!="Support" && needLandCellsCount[key]!=0;});
 
-			
+
 			if (resourcesRound!=0){
 				// in round two water shouldn't be considered as natural cannot change to water
 				if (inNeedLandUses.length==1 && inNeedLandUses[0] == ["Water"]) return false;
@@ -1755,7 +1710,7 @@
 				counter = 0; // start from scratch to search and use natural
 				return true;
 			}else if (currentAvailableResourcesForInNeed==0 && resourcesRound == 1 && landCellsCount["Natural"]!=0){
-				return true; // still natural resource is left 
+				return true; // still natural resource is left
 			}
 
 			return currentAvailableResourcesForInNeed!=0? true:false;
@@ -1767,7 +1722,7 @@
 
 			// reset data
 			grid.data().forEach(function(d){d.isTaken = false;})
-			
+
 			cities.attr("opacity", ".4");
 
 			// resize grid
@@ -1778,7 +1733,7 @@
 
         	// calculate need for each city
         	calculateSettlementsNeed();
-			
+
 			counter = 0;
 
 			$('#progUpdate').empty();
@@ -1795,22 +1750,22 @@
 		// run the scenario
 	    d3.select("#play")
 	        .on("click", function() {
-	        	
+
 	        	// if (!checkScenario())return;
-				
+
 				// I'm calling find resources inside resize grid to make sure about the sequence of execution
 				// http://stackoverflow.com/questions/1859185/how-to-force-sequential-javascript-execution
 				findResources();
 
 	        });
-	        	
+
     });
 
 	});
 
 
 
-	
+
 	</script>
 
 
@@ -1820,7 +1775,7 @@
 		This is a very clean method, From this link to send data to google Spread Sheet:
 		https://mashe.hawksey.info/2014/07/google-sheets-as-a-database-insert-with-apps-script-using-postget-methods-with-ajax-example
 	*/
-	
+
 	jQuery( document ).ready(function( $ ) {
 
 		// variable to hold request
@@ -1833,34 +1788,34 @@
 			}
 			// setup some local variables
 			var $form = $(this);
-			
+
 			// let's select and cache all the fields
 			var $inputs = $form.find("input, select, button, textarea");
-			
+
 			// serialize the data in the form
 			var serializedData = $form.serialize();
-			
+
 			// let's disable the inputs for the duration of the ajax request
 			// Note: we disable elements AFTER the form data has been serialized.
 			// Disabled form elements will not be serialized.
 			$inputs.prop("disabled", true);
 			$('#result').text('    Calculating new land area...');
-		
+
 			// fire off the request to /form.php
 			request = $.ajax({
 				url: "https://script.google.com/macros/s/AKfycbwyagcjP_5UD0emBo-MYepMLG3OEGZm815JpurpddezCd-VlWYT/exec",
 				type: "post",
 				data: serializedData
 			});
-		
+
 			// callback handler that will be called on success
 			request.done(function (response, textStatus, jqXHR){
 				// log a message to the console
 				$('#result').text(" ");
-				
+
 				var totalSupport = 0; //calculate total support needed per person
 
-				// map land need 
+				// map land need
 				totalLandNeedPerPerson = response.newValues.map(function(d){
 					totalSupport += d[2];
 					return {landuse:d[0], primary:d[1], support:d[2], total:d[1]+d[2]}
@@ -1869,10 +1824,10 @@
 				// add support as the first object
 				var supportNeed = [{landuse:"Support", primary:totalSupport, support:0, total:totalSupport}];
 
-				totalLandNeedPerPerson = supportNeed.concat(totalLandNeedPerPerson); 
+				totalLandNeedPerPerson = supportNeed.concat(totalLandNeedPerPerson);
 
 				calculateSettlementsNeed();
-				
+
 				// update bar chart
 				updateBarChart();
 
@@ -1886,7 +1841,7 @@
 					.style("color", "white")
 					.text(originalLandCellsCount[lu]);
 				});
-				
+
 				d3.select("#needResources").text("#Cells Needed");
 				d3.keys(needLandCellsCount).forEach(function(lu){
 					d3.select("#need" + lu)
@@ -1899,7 +1854,7 @@
 				d3.select("#checkArea").attr("class", "btn btn-success");
 
 			});
-		
+
 			// callback handler that will be called on failure
 			request.fail(function (jqXHR, textStatus, errorThrown){
 				// log the error to the console
@@ -1908,21 +1863,21 @@
 					textStatus, errorThrown
 				);
 			});
-		
+
 			// callback handler that will be called regardless
 			// if the request failed or succeeded
 			request.always(function () {
 				// reenable the inputs
 				$inputs.prop("disabled", false);
 			});
-		
+
 			// prevent default posting of form
 			event.preventDefault();
 		});
 	});
 
 	</script>
-    
+
     <!--
     	Tetris music track. Credit goes to Hirokazu Tanaka.
 		http://www.vgmpf.com/Wiki/index.php?title=Tetris_(NES)
@@ -1934,8 +1889,8 @@
 	<audio id="tetrisSuccess">
 		<source src="./music/07_Tetris_NES_Success.ogg">
 	</audio>
-		
-		<!-- footer 
+
+		<!-- footer
 	    <div class="row-fluid">
 	        <footer>
 	            <div class="footer navbar-fixed-bottom col-xs-12" style="background:white">
@@ -1961,6 +1916,6 @@
 	    <script src="base_bootstrap/js/bootstrap.min.js"></script>
 
 </body>
-	
+
 
 </html>
