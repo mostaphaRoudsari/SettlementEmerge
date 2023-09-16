@@ -10,10 +10,10 @@
 		<title>e[m]ergy settlement</title>
 
 		<script src="./js/d3.v3.min.js" charset="utf-8"></script> <!-- D3 -->
-		<script src="http://d3js.org/queue.v1.min.js"></script> <!-- QUEUE -->
+		<script src="https://d3js.org/queue.v1.min.js"></script> <!-- QUEUE -->
 
 		<script type="text/javascript" src="https://ajax.cloudflare.com/cdn-cgi/nexp/dok3v=919620257c/cloudflare.min.js"></script>
-	    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 		<script src="./rangeslider_files/js/ion.rangeSlider.js"></script>
 
@@ -160,7 +160,7 @@
 	    <div class="row-fluid">
 	    	<div class="corner-ribbon top-right sticky blue">BETA</div>
 		    <div id="title" class="col-xs-12">
-		    <a href="http://www.mebd-penndesign.info/New-Chautauqua-Game" target="_blank" title="Click to read more about the project">
+		    <a href="https://www.mebd-penndesign.info/New-Chautauqua-Game" target="_blank" title="Click to read more about the project">
 		    		<h1>The New Chautauqua Game<br><span style = "font-size:0.5em"> Designing the Renewable City and Region Using e[m]ergy Accounting</span></h1>
 		    </a>
 		    </div>
@@ -186,7 +186,7 @@
 			    			<p>The New Chautauqua Game evaluates the land needed to harvest and concentrate renewable energies to support the population of the county.</p>
 							<p>To play the game adjust the slider bars below to modify the rates of production and consumption in the county, then click on “Check Land Area” to see if your scenario can support the population on the resources of the county.</p>
 							<p>To see the distribution of land uses within the county, select a population scenario and click “Remap Chautauqua” to see the results.</p>
-							<p>You can read more about the project <a href="http://www.mebd-penndesign.info/New-Chautauqua-Game" target="_blank">here</a>.</p>
+							<p>You can read more about the project <a href="https://www.mebd-penndesign.info/New-Chautauqua-Game" target="_blank">here</a>.</p>
 		          		</div>
 		        	</div>
 		        </div>
@@ -961,7 +961,7 @@
 
 		initialSettlements = settlements;
 
-		// population table - Based on: http://christopheviau.com/d3_tutorial/
+		// population table - Based on: https://christopheviau.com/d3_tutorial/
 		settlements.forEach(function(d){
 				totalPopulation += +d.population;
 				originalPopulation += +d.population;
@@ -1181,7 +1181,7 @@
                         .attr("height", 24)
                         .append("xhtml:div")
                         .html("<input type='text' id=new_population placeholder='input new population' onkeydown ='{if (event.keyCode==13)updatePopulationOfTheCity()}; if (event.keyCode==27) {removeInputPanel();}'></input>")
-                        //found this example here: http://stackoverflow.com/questions/23503936/javascript-d3-create-floating-textbox-on-click-and-update-graph-from-textbox-in
+                        //found this example here: https://stackoverflow.com/questions/23503936/javascript-d3-create-floating-textbox-on-click-and-update-graph-from-textbox-in
                 		d3.event.preventDefault(); //stop showing browser menu
                 })
                 .on("click", function(d){
@@ -1752,7 +1752,7 @@
 	        	// if (!checkScenario())return;
 
 				// I'm calling find resources inside resize grid to make sure about the sequence of execution
-				// http://stackoverflow.com/questions/1859185/how-to-force-sequential-javascript-execution
+				// https://stackoverflow.com/questions/1859185/how-to-force-sequential-javascript-execution
 				findResources();
 
 	        });
@@ -1878,7 +1878,7 @@
 
     <!--
     	Tetris music track. Credit goes to Hirokazu Tanaka.
-		http://www.vgmpf.com/Wiki/index.php?title=Tetris_(NES)
+		https://www.vgmpf.com/Wiki/index.php?title=Tetris_(NES)
 	-->
 	<audio loop id="tetrisTune">
 			<source src="./music/02_Tetris_NES_Music_1_Fast.ogg">
@@ -1899,7 +1899,7 @@
 	                    |
 	                    <a href="https://github.com/mostaphaRoudsari/SettlementEmerge" target="_blank"> Fork the project on Github</a>
 	                    |
-	                    <a href="http://www.mebd-penndesign.info/New-Chautauqua-Game" target="_blank"> Read more about the project</a>
+	                    <a href="https://www.mebd-penndesign.info/New-Chautauqua-Game" target="_blank"> Read more about the project</a>
 
 	                </p>
 	            </div>
